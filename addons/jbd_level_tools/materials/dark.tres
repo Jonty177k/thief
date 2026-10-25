@@ -1,0 +1,12 @@
+[gd_resource type="StandardMaterial3D" load_steps=2 format=3]
+
+[ext_resource type="Texture2D" path="res://addons/jbd_level_tools/materials/noise.tres" id="1_jnot5"]
+
+[resource]
+resource_name = "Dark"
+albedo_color = Color(0.2, 0.18, 0.17, 1)
+albedo_texture = ExtResource("1_jnot5")
+uv1_scale = Vector3(0.08, 0.08, 0.08)
+uv1_triplanar = true
+uv1_world_triplanar = true
+texture_filter = 2
