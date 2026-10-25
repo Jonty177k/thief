@@ -12,7 +12,7 @@ var shots := [
 
 
 func _ready() -> void:
-	var main: Node3D = load("res://scenes/main.tscn").instantiate()
+	var main: Node3D = load("res://scenes/greybox_slice.tscn").instantiate()
 	add_child(main)
 	var p = main.player
 	main.hud.help.visible = false
@@ -24,7 +24,7 @@ func _ready() -> void:
 		var d: Vector3 = s[3] - p.global_position
 		p.rotation.y = atan2(-d.x, -d.z)
 		var c: Vector3 = s[3] - (p.global_position + Vector3(0, 1.6, 0))
-		p.head.rotation.x = atan2(c.y, Vector2(c.x, c.z).length())
+		p.camera_rig.set_pitch_degrees(rad_to_deg(atan2(c.y, Vector2(c.x, c.z).length())))
 		await get_tree().create_timer(1.2).timeout
 		await RenderingServer.frame_post_draw
 		var img := get_viewport().get_texture().get_image()

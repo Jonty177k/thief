@@ -15,26 +15,36 @@ with nearest-neighbour filtering.
 
 1. Install [Godot 4.3+](https://godotengine.org/download) (standard build, not .NET).
 2. Open Godot, **Import**, and pick this folder's `project.godot`.
-3. Press **F5**.
+3. Press **F5**. You start in the **controller test area**
+   (`levels/controller_test.tscn`): a graybox course for walking, jumping,
+   crouching, dashing, fighting dummies, doors, ladders and bridges.
+   The greybox Colossus slice is `scenes/greybox_slice.tscn` (open it, press **F6**).
+
+![The controller test area](docs/screenshots/controller_01_yard.png)
 
 ## Controls
 
-| Key | Action |
-| --- | --- |
-| WASD / arrows | Move |
-| Mouse | Look |
-| Shift | Sprint (uses stamina, loud) |
-| Ctrl or C | Crouch (slow, quiet, darker) |
-| Space | Jump. Jump at a ledge to mantle onto it |
-| Left mouse | Sword (pitiful) |
-| Right mouse | Shield (soaks most of a hit, costs stamina) |
-| G or middle mouse | Grappling hook. Only bites **brown wood**. Press again or jump to let go |
-| Q / E | Lean left / right to peek round corners |
-| F | Rest at a campfire |
-| 1 / 2 | In the rest menu: rest until morning / evening |
-| H | Hide the controls overlay |
-| T | Debug: skip one hour |
-| Esc | Free the mouse (click to recapture) |
+Jeffrey's controller follows the first-person controller spec. Everything
+about it, including every tuning value, is in [docs/CONTROLLER.md](docs/CONTROLLER.md).
+
+| Action | DualSense | Keyboard / mouse |
+| --- | --- | --- |
+| Move | Left stick | WASD |
+| Look | Right stick | Mouse |
+| Run (hold) | L2 | Shift |
+| Block (hold) | L1 | Right mouse |
+| Light attack | R1 | Left mouse |
+| Heavy attack | R2 | F |
+| Jump | Cross | Space |
+| Dash | Circle | Alt |
+| Interact (doors, levers, pickups, rest at a campfire) | Square | E |
+| Crouch (toggle) | Triangle | Ctrl or C |
+| Rest menu: morning / evening | D-pad up / down | 1 / 2 |
+| Grappling hook (greybox slice only; bites **brown wood**) | R3 | G or middle mouse |
+| Debug readout | Options | F3 |
+| Controls overlay | Create | H |
+| Debug: skip one hour | | T |
+| Free the mouse | | Esc |
 
 ## What's in the slice
 
@@ -53,7 +63,7 @@ with nearest-neighbour filtering.
   Campfires light you up.
 - **Wardens** patrol day and night. They notice you gradually (`?`), then hunt (`!`),
   lose you if you break line of sight, search, and give up. Three hits kill you.
-  Your sword does 9 damage to their 260 HP (×4 on an unaware back). Don't.
+  Your sword barely scratches their 260 HP (×4 on an unaware back). Don't.
 - **Campfires** are checkpoints. Walking up to one sets your respawn point.
   Resting heals you, skips to morning or evening, and resets every enemy,
   Elden Ring style. Three fires: *Tailbone Fire*, *Rib Hollow*, *Shoulder Watch*.
@@ -63,68 +73,68 @@ with nearest-neighbour filtering.
 
 The **Level Tools** plugin (on by default, panel under the Inspector) lets you
 build levels in the editor without code: sculpt and paint terrain, carve
-cliffs and ramps, click to place campfires, torches, hook anchors, enemies
-with patrol routes and building blocks on a snapping grid, save groups of
-pieces as prefabs, and play-test from the editor. See
+cliffs and ramps, click to place ground tiles, hills, cliffs, mountains,
+ladders, bridges, doors, levers, campfires, torches, enemies with patrol
+routes and building blocks on a snapping grid, save groups of pieces as
+prefabs, and play-test from the editor. See
 [docs/LEVEL_TOOLS.md](docs/LEVEL_TOOLS.md), and open
 `levels/example_camp.tscn` for a worked example.
 
+![Opening-area pieces: cliff, ladder, bridges and mountains](docs/screenshots/controller_06_opening_pieces.png)
 ![Placing a Warden next to a hut prefab](docs/screenshots/level_tools_editor_place.jpg)
-![The example camp at night](docs/screenshots/level_tools_camp_night.png)
 
 ## Project layout
 
 ```
-project.godot        engine settings (low-res stretch, Game autoload)
-scenes/main.tscn     the game scene; plays world.gd's greybox, or a Level Scene if set
-scenes/player.tscn   Jeffrey, with all his tuning in the Inspector
+project.godot        engine settings, Input Map (rewrite with tools/write_input_map.gd)
+scenes/main.tscn     the game scene; plays its Level Scene (the test area), or world.gd's greybox if empty
+scenes/greybox_slice.tscn  the Colossus greybox slice
+scenes/player.tscn   Jeffrey, with all his tuning in the Inspector (one node per component)
 scripts/
   game.gd            autoload: clock, daylight, checkpoint
-  main.gd            input map, wiring, resting, dying
-  world.gd           level layout: greybox, fires, enemies, tree  <- edit the level here
-  player.gd          Jeffrey: movement, head bob, lean, mantle, sword, shield, grapple, light gem
+  main.gd            wiring, resting, dying, optional grappling hook
+  world.gd           greybox slice layout: fires, enemies, tree
+  player/            the controller: player.gd (states, health), player_input, player_movement,
+                     player_camera, player_dash, player_sword, player_shield, player_interaction,
+                     player_stealth, player_viewmodel, grapple_hook (add-on)
+  combat/            damage_info.gd, interactable.gd, sfx.gd
   enemy.gd           Warden / Hollow stats and stealth AI
   campfire.gd        checkpoint fire
   day_night.gd       sun, moon, sky, fog
   hud.gd             bars, light gem, clock, prompts, rest menu
+  debug_overlay.gd   the F3 readout
 addons/jbd_level_tools/
   plugin.gd, dock.gd the editor plugin and its panel
   catalog.gd         everything on the Place palette  <- add new pieces here
   terrain/           sculptable, paintable heightmap terrain
-  objects/           placeable pieces: blocks, campfire, torch, enemy, start, exit, shadow zone
-  materials/         block materials (hide, plate, bone, wood, ruin, dark, rock, iron)
+  objects/           placeable pieces: blocks, landforms, ladders, bridges, doors, levers, dummies, ...
+  materials/         materials (grass, dirt, rope, grid, hide, plate, bone, wood, ruin, rock, iron, ...)
   playtest/          the scene the Play buttons launch
-levels/              levels built with the tools (example_camp.tscn)
+levels/              controller_test.tscn (built by tools/build_controller_test.tscn), example_camp.tscn
 prefabs/             saved prefabs (hut.tscn)
+tools/               write_input_map.gd, build_controller_test.tscn
 tests/
-  smoke_test.tscn    headless playtest of the core mechanics
-  level_tools_test.tscn  headless test of the level tools and the example level
-  screenshots.tscn   renders the images in docs/screenshots
+  controller_test.tscn   headless acceptance tests for the controller
+  smoke_test.tscn        headless playtest of the greybox slice
+  level_tools_test.tscn  the level tools, the new pieces and the example level
+  screenshots.tscn, screenshots_test_area.tscn  render docs/screenshots
 ```
 
-Jeffrey's movement and feel are tuned in the Inspector: open
-`scenes/player.tscn`, select the root **Jeffrey** node, and adjust the
-*Movement*, *Head Bob*, *Landing*, *Lean*, *Combat* and *Grappling Hook*
-groups. Hover any value for a description. Enemy stats are still in
-`enemy.gd` `KINDS`, and the day length is in `game.gd`.
+Enemy stats are in `enemy.gd` `KINDS`, and the day length is in `game.gd`.
 
 ## Tests
 
 ```
+godot --headless --path . res://tests/controller_test.tscn
 godot --headless --path . res://tests/smoke_test.tscn
-```
-
-Prints `PASS`/`FAIL` for 27 checks (weighty acceleration, head bob, torch light,
-footsteps, lean, fall damage, grapple routes, ramp, day/night visibility,
-Hollows only at night, a Warden spotting and killing Jeffrey, respawn,
-blocking, resting, reaching the tree) and exits non-zero on failure.
-
-```
 godot --headless --path . res://tests/level_tools_test.tscn
 ```
 
-Checks the level tools (34 checks: terrain brushes, every palette piece,
-prefabs, new levels) and plays `levels/example_camp.tscn` through the game.
+Each prints `PASS`/`FAIL` per check and exits non-zero on failure.
+The controller suite covers the spec's acceptance tests (64 checks), the
+smoke test the greybox slice (stealth, enemies, grapple routes, resting,
+reaching the tree), and the level tools suite every brush and palette piece
+plus a playthrough of `levels/example_camp.tscn`.
 
 The full design lives in [docs/GDD.md](docs/GDD.md).
 

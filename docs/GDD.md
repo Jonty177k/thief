@@ -109,6 +109,23 @@ Combat should be simple, responsive, and skill-based.
 
 **Design goal:** An experienced player can survive encounters through timing and positioning, but combat never becomes trivial.
 
+### Controller
+
+Jeffrey's first-person controller follows the separate *First-Person
+Controller Specification*: Thief II-style grounded movement, hold-to-run,
+toggle crouch, a short directional dash, light and heavy sword attacks, a
+held shield and a context Interact button, on a DualSense or keyboard and
+mouse. Where that spec and this document differ, the spec wins for now:
+
+- No stamina. Running, attacking and blocking cost nothing.
+- No mantling (jumping onto chest-high ledges). The Hookshot (7.3) still
+  pulls Jeffrey up onto a ledge.
+- No leaning.
+- The shield blocks a 120° cone in front and lets 15% of a blocked hit through.
+- Resting at a campfire is done with Interact.
+
+Controls, tuning values and test results: [CONTROLLER.md](CONTROLLER.md).
+
 ## 4. Core Gameplay Loop
 
 1. Rest at a campfire to heal and choose the time of day.

@@ -1,21 +1,25 @@
 extends Node3D
-## Wires the slice together: input map, world, Jeffrey, HUD, campfires,
-## resting, dying, and the Colossus's occasional footsteps.
+## Wires the game together: world or level, Jeffrey, HUD, campfires,
+## resting, dying, and the Colossus's occasional footsteps. Bindings are
+## in Project Settings > Input Map.
 
 const World := preload("res://scripts/world.gd")
 const PlayerScene := preload("res://scenes/player.tscn")
 const Hud := preload("res://scripts/hud.gd")
 const DayNight := preload("res://scripts/day_night.gd")
+const DebugOverlay := preload("res://scripts/debug_overlay.gd")
 
 ## A level built with the Level Tools (addons/jbd_level_tools). Leave it
 ## empty to play the code-built greybox in world.gd.
 @export var level_scene: PackedScene
 
 var world: Node3D
-var player: CharacterBody3D
+var player: JBDPlayer
 var hud: CanvasLayer
+var debug: CanvasLayer
+var grapple: GrappleHook
 
-var current_fire: Node3D
+var resting_fire: Node3D
 var menu_open := false
 var busy := false
 var tremor_timer := 18.0
@@ -23,10 +27,11 @@ var first_tremor := true
 
 
 func _ready() -> void:
-	_setup_input()
 	add_child(DayNight.new())
 	world = level_scene.instantiate() if level_scene else World.new()
 	add_child(world)
+	if _level_setting("start_hour", -1.0) >= 0.0:
+		Game.set_hour(_level_setting("start_hour", -1.0))
 	var start := get_tree().get_first_node_in_group("player_start") as Node3D
 	if start:
 		Game.checkpoint_position = start.global_position
@@ -36,57 +41,38 @@ func _ready() -> void:
 	player.global_position = Game.checkpoint_position
 	if start:
 		player.rotation.y = start.global_rotation.y
+	if _level_setting("allow_grapple", true):
+		grapple = GrappleHook.new()
+		grapple.name = "GrappleHook"
+		player.add_child(grapple)
 
 	hud = Hud.new()
 	add_child(hud)
+	hud.set_grapple_enabled(grapple != null)
+	debug = DebugOverlay.new()
+	debug.player = player
+	debug.visible = _level_setting("show_debug_overlay", false)
+	add_child(debug)
 
 	player.health_changed.connect(hud.set_health)
-	player.stamina_changed.connect(hud.set_stamina)
 	player.took_hit.connect(hud.flash_damage)
 	player.died.connect(_on_player_died)
+	player.notice.connect(func(text: String) -> void: hud.show_message(text, 1.5))
+	player.interaction.prompt_changed.connect(hud.set_prompt)
 	for fire in world.campfires:
 		fire.player_entered.connect(_on_fire_entered)
-		fire.player_exited.connect(_on_fire_exited)
+		fire.rest_requested.connect(_open_rest_menu)
 	world.goal_reached.connect(_on_goal_reached)
 
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	hud.fade_to(0.0, 2.0)
-	hud.show_message("Follow the tree.", 3.0)
+	hud.show_message(_level_setting("intro_text", "Follow the tree."), 3.0)
 
 
-func _setup_input() -> void:
-	_bind("move_forward", [KEY_W, KEY_UP])
-	_bind("move_back", [KEY_S, KEY_DOWN])
-	_bind("move_left", [KEY_A, KEY_LEFT])
-	_bind("move_right", [KEY_D, KEY_RIGHT])
-	_bind("jump", [KEY_SPACE])
-	_bind("sprint", [KEY_SHIFT])
-	_bind("crouch", [KEY_CTRL, KEY_C])
-	_bind("attack", [], [MOUSE_BUTTON_LEFT])
-	_bind("block", [], [MOUSE_BUTTON_RIGHT])
-	_bind("grapple", [KEY_G], [MOUSE_BUTTON_MIDDLE])
-	_bind("lean_left", [KEY_Q])
-	_bind("lean_right", [KEY_E])
-	_bind("interact", [KEY_F])
-	_bind("rest_morning", [KEY_1])
-	_bind("rest_evening", [KEY_2])
-	_bind("toggle_help", [KEY_H])
-	_bind("free_mouse", [KEY_ESCAPE])
-	_bind("debug_time", [KEY_T])
-
-
-func _bind(action: StringName, keys: Array, buttons: Array = []) -> void:
-	if InputMap.has_action(action):
-		return  # already defined in Project Settings; respect that
-	InputMap.add_action(action)
-	for k in keys:
-		var ev := InputEventKey.new()
-		ev.physical_keycode = k
-		InputMap.action_add_event(action, ev)
-	for b in buttons:
-		var ev := InputEventMouseButton.new()
-		ev.button_index = b
-		InputMap.action_add_event(action, ev)
+## A setting from the level root (JBDLevel), or `default` for the greybox.
+func _level_setting(key: String, default: Variant) -> Variant:
+	var v = world.get(key) if world else null
+	return default if v == null else v
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -97,6 +83,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("toggle_help"):
 		hud.toggle_help()
+	elif event.is_action_pressed("toggle_debug"):
+		debug.visible = not debug.visible
 	elif event.is_action_pressed("debug_time"):
 		Game.set_hour(Game.hour + 1.0)
 	elif menu_open:
@@ -104,20 +92,17 @@ func _unhandled_input(event: InputEvent) -> void:
 			_rest(Game.MORNING_HOUR, "Morning. The wardens can see you clearly now.")
 		elif event.is_action_pressed("rest_evening"):
 			_rest(Game.EVENING_HOUR, "Night falls. The Hollows are walking.")
-		elif event.is_action_pressed("interact"):
+		elif event.is_action_pressed("interact") or event.is_action_pressed("dash"):
 			_close_menu()
-	elif event.is_action_pressed("interact") and current_fire and not player.dead and not busy:
-		menu_open = true
-		player.input_locked = true
-		hud.open_rest_menu(current_fire.fire_name)
-		hud.set_prompt("")
 
 
 func _process(delta: float) -> void:
 	hud.set_visibility(player.visibility)
-	hud.set_grapple_aim(player.aim_grapple_valid)
+	hud.set_grapple_aim(grapple != null and grapple.aim_valid)
 	hud.set_clock(Game.clock_text())
 
+	if not _level_setting("colossus_tremors", true):
+		return
 	tremor_timer -= delta
 	if tremor_timer <= 0.0:
 		tremor_timer = randf_range(22.0, 34.0)
@@ -128,27 +113,29 @@ func _process(delta: float) -> void:
 
 
 func _on_fire_entered(fire: Node3D) -> void:
-	current_fire = fire
 	if not fire.kindled:
 		fire.kindled = true
 		hud.show_message("%s kindled" % fire.fire_name, 2.0, Color(1.0, 0.7, 0.35))
 	Game.checkpoint_position = fire.respawn_point()
 	Game.checkpoint_name = fire.fire_name
-	hud.set_prompt("[F] Rest at %s" % fire.fire_name)
 
 
-func _on_fire_exited(fire: Node3D) -> void:
-	if current_fire == fire:
-		current_fire = null
-		hud.set_prompt("")
+func _open_rest_menu(fire: Node3D) -> void:
+	if player.dead or busy or menu_open:
+		return
+	_on_fire_entered(fire)
+	resting_fire = fire
+	menu_open = true
+	player.input_locked = true
+	hud.open_rest_menu(fire.fire_name, player.input.using_gamepad)
 
 
 func _close_menu() -> void:
 	menu_open = false
+	# Let go of the button that closed the menu before Jeffrey can act again.
+	await get_tree().physics_frame
 	player.input_locked = false
 	hud.close_rest_menu()
-	if current_fire:
-		hud.set_prompt("[F] Rest at %s" % current_fire.fire_name)
 
 
 func _rest(hour: float, text: String) -> void:
@@ -164,8 +151,6 @@ func _rest(hour: float, text: String) -> void:
 	player.input_locked = false
 	busy = false
 	hud.show_message(text, 2.5)
-	if current_fire:
-		hud.set_prompt("[F] Rest at %s" % current_fire.fire_name)
 
 
 func _reset_enemies() -> void:

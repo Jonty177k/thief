@@ -9,6 +9,14 @@ signal goal_reached
 @export var level_name := "Untitled level"
 ## Hour of day the level starts at when play-tested. -1 keeps the clock.
 @export_range(-1.0, 23.9, 0.5) var start_hour := -1.0
+## Shown when the level starts.
+@export var intro_text := "Follow the tree."
+## Give Jeffrey the grappling hook in this level.
+@export var allow_grapple := true
+## Start with the controller debug overlay showing (F3 toggles it).
+@export var show_debug_overlay := false
+## The Colossus takes the odd step and shakes the world.
+@export var colossus_tremors := true
 
 ## Filled at runtime with every campfire in the level (Main wires them up).
 var campfires: Array[Node3D] = []
