@@ -590,10 +590,14 @@ func exit_shadow() -> void:
 
 func _update_visibility(input_dir: Vector2, delta: float) -> void:
 	var light := 0.12 + 0.88 * Game.daylight()
-	for fire in get_tree().get_nodes_in_group("campfire"):
-		var d: float = fire.global_position.distance_to(global_position)
-		if d < 10.0:
-			light = maxf(light, 0.95 * (1.0 - d / 10.0))
+	# Campfires, plus anything in the "light_source" group (e.g. torches),
+	# which can set its own `light_radius`.
+	var lights := get_tree().get_nodes_in_group("campfire") + get_tree().get_nodes_in_group("light_source")
+	for l in lights:
+		var radius: float = l.get("light_radius") if l.get("light_radius") != null else 10.0
+		var d: float = l.global_position.distance_to(global_position)
+		if d < radius:
+			light = maxf(light, 0.95 * (1.0 - d / radius))
 	if shadow_zones > 0:
 		light *= 0.35
 

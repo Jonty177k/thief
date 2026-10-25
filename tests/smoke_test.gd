@@ -147,6 +147,16 @@ func _run() -> void:
 	var night_vis: float = p.visibility
 	check("more visible by day", day_vis > night_vis + 0.3, "day %.2f night %.2f" % [day_vis, night_vis])
 
+	# A torch (any "light_source") lights Jeffrey up at night.
+	var torch := Node3D.new()
+	torch.add_to_group("light_source")
+	main.add_child(torch)
+	torch.global_position = p.global_position + Vector3(1, 1, 0)
+	await wait(1.5)
+	var torch_vis: float = p.visibility
+	torch.queue_free()
+	check("torches brighten the light gem", torch_vis > night_vis + 0.3, "%.2f" % torch_vis)
+
 	# Hollows walk only at night.
 	var hollows := get_tree().get_nodes_in_group("enemy").filter(func(e): return e.kind == "hollow")
 	await wait(0.2)

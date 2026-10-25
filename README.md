@@ -91,7 +91,7 @@ groups. Hover any value for a description. Enemy stats are still in
 godot --headless --path . res://tests/smoke_test.tscn
 ```
 
-Prints `PASS`/`FAIL` for 26 checks (weighty acceleration, head bob,
+Prints `PASS`/`FAIL` for 27 checks (weighty acceleration, head bob, torch light,
 footsteps, lean, fall damage, grapple routes, ramp, day/night visibility,
 Hollows only at night, a Warden spotting and killing Jeffrey, respawn,
 blocking, resting, reaching the tree) and exits non-zero on failure.
