@@ -59,11 +59,24 @@ with nearest-neighbour filtering.
   Elden Ring style. Three fires: *Tailbone Fire*, *Rib Hollow*, *Shoulder Watch*.
 - The Colossus occasionally takes a step and the world shudders.
 
+## Building levels
+
+The **Level Tools** plugin (on by default, panel under the Inspector) lets you
+build levels in the editor without code: sculpt and paint terrain, carve
+cliffs and ramps, click to place campfires, torches, hook anchors, enemies
+with patrol routes and building blocks on a snapping grid, save groups of
+pieces as prefabs, and play-test from the editor. See
+[docs/LEVEL_TOOLS.md](docs/LEVEL_TOOLS.md), and open
+`levels/example_camp.tscn` for a worked example.
+
+![Placing a Warden next to a hut prefab](docs/screenshots/level_tools_editor_place.jpg)
+![The example camp at night](docs/screenshots/level_tools_camp_night.png)
+
 ## Project layout
 
 ```
 project.godot        engine settings (low-res stretch, Game autoload)
-scenes/main.tscn     the game scene; the world is built in code
+scenes/main.tscn     the game scene; plays world.gd's greybox, or a Level Scene if set
 scenes/player.tscn   Jeffrey, with all his tuning in the Inspector
 scripts/
   game.gd            autoload: clock, daylight, checkpoint
@@ -74,8 +87,18 @@ scripts/
   campfire.gd        checkpoint fire
   day_night.gd       sun, moon, sky, fog
   hud.gd             bars, light gem, clock, prompts, rest menu
+addons/jbd_level_tools/
+  plugin.gd, dock.gd the editor plugin and its panel
+  catalog.gd         everything on the Place palette  <- add new pieces here
+  terrain/           sculptable, paintable heightmap terrain
+  objects/           placeable pieces: blocks, campfire, torch, enemy, start, exit, shadow zone
+  materials/         block materials (hide, plate, bone, wood, ruin, dark, rock, iron)
+  playtest/          the scene the Play buttons launch
+levels/              levels built with the tools (example_camp.tscn)
+prefabs/             saved prefabs (hut.tscn)
 tests/
   smoke_test.tscn    headless playtest of the core mechanics
+  level_tools_test.tscn  headless test of the level tools and the example level
   screenshots.tscn   renders the images in docs/screenshots
 ```
 
@@ -95,6 +118,13 @@ Prints `PASS`/`FAIL` for 27 checks (weighty acceleration, head bob, torch light,
 footsteps, lean, fall damage, grapple routes, ramp, day/night visibility,
 Hollows only at night, a Warden spotting and killing Jeffrey, respawn,
 blocking, resting, reaching the tree) and exits non-zero on failure.
+
+```
+godot --headless --path . res://tests/level_tools_test.tscn
+```
+
+Checks the level tools (34 checks: terrain brushes, every palette piece,
+prefabs, new levels) and plays `levels/example_camp.tscn` through the game.
 
 The full design lives in [docs/GDD.md](docs/GDD.md).
 

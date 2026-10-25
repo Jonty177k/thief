@@ -7,6 +7,10 @@ const PlayerScene := preload("res://scenes/player.tscn")
 const Hud := preload("res://scripts/hud.gd")
 const DayNight := preload("res://scripts/day_night.gd")
 
+## A level built with the Level Tools (addons/jbd_level_tools). Leave it
+## empty to play the code-built greybox in world.gd.
+@export var level_scene: PackedScene
+
 var world: Node3D
 var player: CharacterBody3D
 var hud: CanvasLayer
@@ -21,12 +25,17 @@ var first_tremor := true
 func _ready() -> void:
 	_setup_input()
 	add_child(DayNight.new())
-	world = World.new()
+	world = level_scene.instantiate() if level_scene else World.new()
 	add_child(world)
+	var start := get_tree().get_first_node_in_group("player_start") as Node3D
+	if start:
+		Game.checkpoint_position = start.global_position
 
 	player = PlayerScene.instantiate()
 	add_child(player)
 	player.global_position = Game.checkpoint_position
+	if start:
+		player.rotation.y = start.global_rotation.y
 
 	hud = Hud.new()
 	add_child(hud)
