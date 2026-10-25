@@ -1,0 +1,564 @@
+[gd_scene load_steps=16 format=3]
+
+[ext_resource type="Script" path="res://addons/jbd_level_tools/objects/level.gd" id="1_c6s0a"]
+[ext_resource type="Script" path="res://addons/jbd_level_tools/terrain/terrain.gd" id="2_njddg"]
+[ext_resource type="Resource" path="res://levels/example_camp_terrain.res" id="3_1jhou"]
+[ext_resource type="Script" path="res://addons/jbd_level_tools/objects/player_start.gd" id="4_akitv"]
+[ext_resource type="Script" path="res://addons/jbd_level_tools/objects/campfire_spot.gd" id="5_d6rsd"]
+[ext_resource type="Script" path="res://addons/jbd_level_tools/objects/torch.gd" id="6_o6ft3"]
+[ext_resource type="Script" path="res://addons/jbd_level_tools/objects/block.gd" id="7_mc1j6"]
+[ext_resource type="Material" path="res://addons/jbd_level_tools/materials/wood.tres" id="8_lu5dc"]
+[ext_resource type="Script" path="res://addons/jbd_level_tools/objects/shadow_zone.gd" id="9_6vmvf"]
+[ext_resource type="Script" path="res://addons/jbd_level_tools/objects/level_exit.gd" id="10_58pne"]
+[ext_resource type="Script" path="res://addons/jbd_level_tools/objects/enemy_spawner.gd" id="11_7jxt6"]
+[ext_resource type="Material" path="res://addons/jbd_level_tools/materials/ruin.tres" id="12_c8sxh"]
+[ext_resource type="Material" path="res://addons/jbd_level_tools/materials/bone.tres" id="13_fboc4"]
+[ext_resource type="PackedScene" path="res://prefabs/hut.tscn" id="14_ohajo"]
+[ext_resource type="Material" path="res://addons/jbd_level_tools/materials/rock.tres" id="15_kmh6t"]
+
+[node name="ExampleCamp" type="Node3D"]
+script = ExtResource("1_c6s0a")
+level_name = "Example camp"
+start_hour = -1.0
+
+[node name="Terrain" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -64, 0, -64)
+script = ExtResource("2_njddg")
+data = ExtResource("3_1jhou")
+layer_names = PackedStringArray("Hide", "Plate", "Bone", "Rock")
+layer_colors = Array[Color]([Color(0.42, 0.38, 0.34, 1), Color(0.5, 0.47, 0.42, 1), Color(0.82, 0.78, 0.68, 1), Color(0.3, 0.27, 0.25, 1)])
+layer_textures = Array[Texture2D]([null, null, null, null])
+uv_scale = 0.25
+cliff_angle = 50.0
+grapple_anchor = false
+
+[node name="PlayerStart" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 40)
+script = ExtResource("4_akitv")
+
+[node name="Gameplay" type="Node3D" parent="."]
+
+[node name="Campfire" type="Node3D" parent="Gameplay"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 27)
+script = ExtResource("5_d6rsd")
+fire_name = "Hide Camp"
+
+[node name="StandingTorch" type="Node3D" parent="Gameplay"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, 31)
+script = ExtResource("6_o6ft3")
+style = 1
+lit = true
+color = Color(1, 0.62, 0.3, 1)
+energy = 1.6
+light_range = 9.0
+shadows = true
+flicker = 0.35
+
+[node name="StandingTorch2" type="Node3D" parent="Gameplay"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 0, 22)
+script = ExtResource("6_o6ft3")
+style = 1
+lit = true
+color = Color(1, 0.62, 0.3, 1)
+energy = 1.6
+light_range = 9.0
+shadows = true
+flicker = 0.35
+
+[node name="HookAnchor" type="StaticBody3D" parent="Gameplay"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 10.3, -9)
+script = ExtResource("7_mc1j6")
+shape = 0
+size = Vector3(1.4, 0.6, 3)
+material = ExtResource("8_lu5dc")
+grapple_anchor = true
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 1
+roughness = 0.3
+
+[node name="HookAnchor2" type="StaticBody3D" parent="Gameplay"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 10.3, -9)
+script = ExtResource("7_mc1j6")
+shape = 0
+size = Vector3(1.4, 0.6, 3)
+material = ExtResource("8_lu5dc")
+grapple_anchor = true
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 1
+roughness = 0.3
+
+[node name="ShadowZone" type="Area3D" parent="Gameplay"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10, -38)
+script = ExtResource("9_6vmvf")
+size = Vector3(5, 4, 3)
+
+[node name="LevelExit" type="Area3D" parent="Gameplay"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10, -48)
+script = ExtResource("10_58pne")
+size = Vector3(8, 4, 4)
+
+[node name="Enemies" type="Node3D" parent="."]
+
+[node name="Warden" type="Node3D" parent="Enemies"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 10, -20)
+script = ExtResource("11_7jxt6")
+kind = "warden"
+health = 260.0
+damage = 38.0
+patrol_speed = 1.8
+chase_speed = 4.7
+detection_range = 26.0
+field_of_view = 100.0
+hearing = 1.0
+attack_windup = 0.65
+attack_cooldown = 1.6
+night_only = false
+
+[node name="Patrol1" type="Marker3D" parent="Enemies/Warden"]
+
+[node name="Patrol2" type="Marker3D" parent="Enemies/Warden"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 0, 0)
+
+[node name="Patrol3" type="Marker3D" parent="Enemies/Warden"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 0, -20)
+
+[node name="Hollow" type="Node3D" parent="Enemies"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 0, 12)
+script = ExtResource("11_7jxt6")
+kind = "hollow"
+health = 420.0
+damage = 65.0
+patrol_speed = 2.4
+chase_speed = 6.4
+detection_range = 34.0
+field_of_view = 130.0
+hearing = 1.6
+attack_windup = 0.45
+attack_cooldown = 1.2
+night_only = true
+
+[node name="Patrol1" type="Marker3D" parent="Enemies/Hollow"]
+
+[node name="Patrol2" type="Marker3D" parent="Enemies/Hollow"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 40, 0, 0)
+
+[node name="Building" type="Node3D" parent="."]
+
+[node name="Arch" type="StaticBody3D" parent="Building"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10, -38)
+script = ExtResource("7_mc1j6")
+shape = 4
+size = Vector3(4, 4, 0.8)
+material = ExtResource("12_c8sxh")
+grapple_anchor = false
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 1
+roughness = 0.3
+
+[node name="Pillar" type="StaticBody3D" parent="Building"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 10, -38)
+script = ExtResource("7_mc1j6")
+shape = 3
+size = Vector3(1, 5, 1)
+material = ExtResource("13_fboc4")
+grapple_anchor = false
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 1
+roughness = 0.3
+
+[node name="Pillar2" type="StaticBody3D" parent="Building"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 10, -38)
+script = ExtResource("7_mc1j6")
+shape = 3
+size = Vector3(1, 5, 1)
+material = ExtResource("13_fboc4")
+grapple_anchor = false
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 1
+roughness = 0.3
+
+[node name="Stairs" type="StaticBody3D" parent="Building"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 10, -30)
+script = ExtResource("7_mc1j6")
+shape = 2
+size = Vector3(2, 3, 5)
+material = ExtResource("12_c8sxh")
+grapple_anchor = false
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 1
+roughness = 0.3
+
+[node name="Platform" type="StaticBody3D" parent="Building"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 10, -35.5)
+script = ExtResource("7_mc1j6")
+shape = 0
+size = Vector3(3, 3, 3)
+material = ExtResource("12_c8sxh")
+grapple_anchor = false
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 1
+roughness = 0.3
+
+[node name="Beam" type="StaticBody3D" parent="Building"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 16, -35.5)
+script = ExtResource("7_mc1j6")
+shape = 0
+size = Vector3(3, 0.4, 0.4)
+material = ExtResource("8_lu5dc")
+grapple_anchor = true
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 1
+roughness = 0.3
+
+[node name="Bridge" type="StaticBody3D" parent="Building"]
+transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, -30, 1, 30)
+script = ExtResource("7_mc1j6")
+shape = 0
+size = Vector3(1.6, 0.3, 8)
+material = ExtResource("8_lu5dc")
+grapple_anchor = true
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 1
+roughness = 0.3
+
+[node name="Prefabs" type="Node3D" parent="."]
+
+[node name="Hut" parent="Prefabs" instance=ExtResource("14_ohajo")]
+transform = Transform3D(0.866025, 0, -0.5, 0, 1, 0, 0.5, 0, 0.866025, 10, 0, 22)
+
+[node name="Nature" type="Node3D" parent="."]
+
+[node name="BigRock" type="StaticBody3D" parent="Nature"]
+transform = Transform3D(-0.99504, 0, 0.0994793, 0, 1, 0, -0.0994793, 0, -0.99504, 32.5093, 0.114942, 43.7311)
+script = ExtResource("7_mc1j6")
+shape = 8
+size = Vector3(6, 4, 5)
+material = ExtResource("15_kmh6t")
+grapple_anchor = false
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 944311333
+roughness = 0.3
+
+[node name="Rock" type="StaticBody3D" parent="Nature"]
+transform = Transform3D(0.355327, 0, 0.934742, 0, 1, 0, -0.934742, 0, 0.355327, 12.8648, -0.3, 28.8383)
+script = ExtResource("7_mc1j6")
+shape = 8
+size = Vector3(1.92, 1.28, 1.6)
+material = ExtResource("15_kmh6t")
+grapple_anchor = false
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 3322715612
+roughness = 0.3
+
+[node name="Rock2" type="StaticBody3D" parent="Nature"]
+transform = Transform3D(0.21932, 0, 0.975653, 0, 1, 0, -0.975653, 0, 0.21932, -17.0762, -0.3, 55.5289)
+script = ExtResource("7_mc1j6")
+shape = 8
+size = Vector3(1.92, 1.28, 1.6)
+material = ExtResource("15_kmh6t")
+grapple_anchor = false
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 431641944
+roughness = 0.3
+
+[node name="Rock3" type="StaticBody3D" parent="Nature"]
+transform = Transform3D(0.523448, 0, 0.852058, 0, 1, 0, -0.852058, 0, 0.523448, 35.1383, -0.300002, 27.0175)
+script = ExtResource("7_mc1j6")
+shape = 8
+size = Vector3(1.92, 1.28, 1.6)
+material = ExtResource("15_kmh6t")
+grapple_anchor = false
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 3952439260
+roughness = 0.3
+
+[node name="BigRock2" type="StaticBody3D" parent="Nature"]
+transform = Transform3D(0.141609, 0, -0.989923, 0, 1, 0, 0.989923, 0, 0.141609, 10.0959, -0.3, 7.47354)
+script = ExtResource("7_mc1j6")
+shape = 8
+size = Vector3(6, 4, 5)
+material = ExtResource("15_kmh6t")
+grapple_anchor = false
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 2498157551
+roughness = 0.3
+
+[node name="Rock4" type="StaticBody3D" parent="Nature"]
+transform = Transform3D(-0.86728, 0, -0.49782, 0, 1, 0, 0.49782, 0, -0.86728, 20.433, -0.3, 38.5806)
+script = ExtResource("7_mc1j6")
+shape = 8
+size = Vector3(1.92, 1.28, 1.6)
+material = ExtResource("15_kmh6t")
+grapple_anchor = false
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 2579755808
+roughness = 0.3
+
+[node name="Rock5" type="StaticBody3D" parent="Nature"]
+transform = Transform3D(-0.241318, 0, -0.970446, 0, 1, 0, 0.970446, 0, -0.241318, 13.4923, -0.3, 26.3181)
+script = ExtResource("7_mc1j6")
+shape = 8
+size = Vector3(1.92, 1.28, 1.6)
+material = ExtResource("15_kmh6t")
+grapple_anchor = false
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 2857890193
+roughness = 0.3
+
+[node name="Rock6" type="StaticBody3D" parent="Nature"]
+transform = Transform3D(0.873722, 0, -0.486425, 0, 1, 0, 0.486425, 0, 0.873722, -16.2717, -0.757173, -1.62466)
+script = ExtResource("7_mc1j6")
+shape = 8
+size = Vector3(1.92, 1.28, 1.6)
+material = ExtResource("15_kmh6t")
+grapple_anchor = false
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 3393061378
+roughness = 0.3
+
+[node name="BigRock3" type="StaticBody3D" parent="Nature"]
+transform = Transform3D(0.635624, 0, -0.771999, 0, 1, 0, 0.771999, 0, 0.635624, -39.1915, 0.64535, 35.3813)
+script = ExtResource("7_mc1j6")
+shape = 8
+size = Vector3(6, 4, 5)
+material = ExtResource("15_kmh6t")
+grapple_anchor = false
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 927292915
+roughness = 0.3
+
+[node name="Rock7" type="StaticBody3D" parent="Nature"]
+transform = Transform3D(0.856173, 0, 0.516689, 0, 1, 0, -0.516689, 0, 0.856173, -9.77637, -0.536437, 43.082)
+script = ExtResource("7_mc1j6")
+shape = 8
+size = Vector3(1.92, 1.28, 1.6)
+material = ExtResource("15_kmh6t")
+grapple_anchor = false
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 395998198
+roughness = 0.3
+
+[node name="Rock8" type="StaticBody3D" parent="Nature"]
+transform = Transform3D(-0.593005, 0, 0.805199, 0, 1, 0, -0.805199, 0, -0.593005, 35.4524, -0.3, 24.3357)
+script = ExtResource("7_mc1j6")
+shape = 8
+size = Vector3(1.92, 1.28, 1.6)
+material = ExtResource("15_kmh6t")
+grapple_anchor = false
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 1010900432
+roughness = 0.3
+
+[node name="BigRock4" type="StaticBody3D" parent="Nature"]
+transform = Transform3D(0.307082, 0, -0.951683, 0, 1, 0, 0.951683, 0, 0.307082, -16.1048, -0.778767, -1.66126)
+script = ExtResource("7_mc1j6")
+shape = 8
+size = Vector3(6, 4, 5)
+material = ExtResource("15_kmh6t")
+grapple_anchor = false
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 643253195
+roughness = 0.3
+
+[node name="Rock9" type="StaticBody3D" parent="Nature"]
+transform = Transform3D(0.306308, 0, -0.951932, 0, 1, 0, 0.951932, 0, 0.306308, 30.1337, -0.3, -4.79504)
+script = ExtResource("7_mc1j6")
+shape = 8
+size = Vector3(1.92, 1.28, 1.6)
+material = ExtResource("15_kmh6t")
+grapple_anchor = false
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 2695413250
+roughness = 0.3
+
+[node name="Rock10" type="StaticBody3D" parent="Nature"]
+transform = Transform3D(-0.432782, 0, -0.901498, 0, 1, 0, 0.901498, 0, -0.432782, -15.7249, -0.3, 62.3231)
+script = ExtResource("7_mc1j6")
+shape = 8
+size = Vector3(1.92, 1.28, 1.6)
+material = ExtResource("15_kmh6t")
+grapple_anchor = false
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 1620601900
+roughness = 0.3
+
+[node name="Rock11" type="StaticBody3D" parent="Nature"]
+transform = Transform3D(-0.81959, 0, 0.572951, 0, 1, 0, -0.572951, 0, -0.81959, -28.0415, -0.201057, 38.3907)
+script = ExtResource("7_mc1j6")
+shape = 8
+size = Vector3(1.92, 1.28, 1.6)
+material = ExtResource("15_kmh6t")
+grapple_anchor = false
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 993221443
+roughness = 0.3
+
+[node name="Rock12" type="StaticBody3D" parent="Nature"]
+transform = Transform3D(-0.245242, 0, 0.969462, 0, 1, 0, -0.969462, 0, -0.245242, 22.8714, -0.3, 7.75664)
+script = ExtResource("7_mc1j6")
+shape = 8
+size = Vector3(1.92, 1.28, 1.6)
+material = ExtResource("15_kmh6t")
+grapple_anchor = false
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 839526196
+roughness = 0.3
+
+[node name="BoneSpur" type="StaticBody3D" parent="Nature"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -24, -0.472435, 6)
+script = ExtResource("7_mc1j6")
+shape = 3
+size = Vector3(0.8, 4, 0.8)
+material = ExtResource("13_fboc4")
+grapple_anchor = false
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 1
+roughness = 0.3
+
+[node name="BoneSpur2" type="StaticBody3D" parent="Nature"]
+transform = Transform3D(0.920505, 0, 0.390731, 0, 1, 0, -0.390731, 0, 0.920505, -21.5, -0.528094, 3.8)
+script = ExtResource("7_mc1j6")
+shape = 3
+size = Vector3(0.8, 4, 0.8)
+material = ExtResource("13_fboc4")
+grapple_anchor = false
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 1
+roughness = 0.3
+
+[node name="BoneSpur3" type="StaticBody3D" parent="Nature"]
+transform = Transform3D(0.694658, 0, 0.71934, 0, 1, 0, -0.71934, 0, 0.694658, -19, -0.512686, 1.6)
+script = ExtResource("7_mc1j6")
+shape = 3
+size = Vector3(0.8, 4, 0.8)
+material = ExtResource("13_fboc4")
+grapple_anchor = false
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 1
+roughness = 0.3
+
+[node name="BoneSpur4" type="StaticBody3D" parent="Nature"]
+transform = Transform3D(0.358368, 0, 0.93358, 0, 1, 0, -0.93358, 0, 0.358368, -16.5, -0.677144, -0.6)
+script = ExtResource("7_mc1j6")
+shape = 3
+size = Vector3(0.8, 4, 0.8)
+material = ExtResource("13_fboc4")
+grapple_anchor = false
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 1
+roughness = 0.3
+
+[node name="BoneSpur5" type="StaticBody3D" parent="Nature"]
+transform = Transform3D(-0.0348995, 0, 0.999391, 0, 1, 0, -0.999391, 0, -0.0348995, -14, -0.932321, -2.8)
+script = ExtResource("7_mc1j6")
+shape = 3
+size = Vector3(0.8, 4, 0.8)
+material = ExtResource("13_fboc4")
+grapple_anchor = false
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 1
+roughness = 0.3
+
+[node name="BoneSpur6" type="StaticBody3D" parent="Nature"]
+transform = Transform3D(-0.422618, 0, 0.906308, 0, 1, 0, -0.906308, 0, -0.422618, -11.5, -0.979395, -5)
+script = ExtResource("7_mc1j6")
+shape = 3
+size = Vector3(0.8, 4, 0.8)
+material = ExtResource("13_fboc4")
+grapple_anchor = false
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 1
+roughness = 0.3

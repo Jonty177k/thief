@@ -28,6 +28,9 @@ const SEARCH_TIME := 6.0
 
 var kind := "warden"
 var waypoints: Array[Vector3] = []
+## Per-enemy tweaks on top of KINDS[kind] (any of its keys), e.g. set by a
+## level's Enemy node.
+var overrides := {}
 var stats: Dictionary
 var home := Vector3.ZERO
 
@@ -56,7 +59,8 @@ func setup(p_kind: String, p_waypoints: Array[Vector3]) -> void:
 
 func _ready() -> void:
 	add_to_group("enemy")
-	stats = KINDS[kind]
+	stats = KINDS[kind].duplicate()
+	stats.merge(overrides, true)
 	hp = stats.hp
 	home = global_position
 	if waypoints.is_empty():
