@@ -28,8 +28,9 @@ with nearest-neighbour filtering.
 | Space | Jump. Jump at a ledge to mantle onto it |
 | Left mouse | Sword (pitiful) |
 | Right mouse | Shield (soaks most of a hit, costs stamina) |
-| Q or middle mouse | Grappling hook. Only bites **brown wood**. Press again or jump to let go |
-| F or E | Rest at a campfire |
+| G or middle mouse | Grappling hook. Only bites **brown wood**. Press again or jump to let go |
+| Q / E | Lean left / right to peek round corners |
+| F | Rest at a campfire |
 | 1 / 2 | In the rest menu: rest until morning / evening |
 | H | Hide the controls overlay |
 | T | Debug: skip one hour |
@@ -58,27 +59,54 @@ with nearest-neighbour filtering.
   Elden Ring style. Three fires: *Tailbone Fire*, *Rib Hollow*, *Shoulder Watch*.
 - The Colossus occasionally takes a step and the world shudders.
 
+## Building levels
+
+The **Level Tools** plugin (on by default, panel under the Inspector) lets you
+build levels in the editor without code: sculpt and paint terrain, carve
+cliffs and ramps, click to place campfires, torches, hook anchors, enemies
+with patrol routes and building blocks on a snapping grid, save groups of
+pieces as prefabs, and play-test from the editor. See
+[docs/LEVEL_TOOLS.md](docs/LEVEL_TOOLS.md), and open
+`levels/example_camp.tscn` for a worked example.
+
+![Placing a Warden next to a hut prefab](docs/screenshots/level_tools_editor_place.jpg)
+![The example camp at night](docs/screenshots/level_tools_camp_night.png)
+
 ## Project layout
 
 ```
 project.godot        engine settings (low-res stretch, Game autoload)
-scenes/main.tscn     the only scene; everything is built in code
+scenes/main.tscn     the game scene; plays world.gd's greybox, or a Level Scene if set
+scenes/player.tscn   Jeffrey, with all his tuning in the Inspector
 scripts/
   game.gd            autoload: clock, daylight, checkpoint
   main.gd            input map, wiring, resting, dying
   world.gd           level layout: greybox, fires, enemies, tree  <- edit the level here
-  player.gd          Jeffrey: movement, crouch, mantle, sword, shield, grapple, light gem
+  player.gd          Jeffrey: movement, head bob, lean, mantle, sword, shield, grapple, light gem
   enemy.gd           Warden / Hollow stats and stealth AI
   campfire.gd        checkpoint fire
   day_night.gd       sun, moon, sky, fog
   hud.gd             bars, light gem, clock, prompts, rest menu
+addons/jbd_level_tools/
+  plugin.gd, dock.gd the editor plugin and its panel
+  catalog.gd         everything on the Place palette  <- add new pieces here
+  terrain/           sculptable, paintable heightmap terrain
+  objects/           placeable pieces: blocks, campfire, torch, enemy, start, exit, shadow zone
+  materials/         block materials (hide, plate, bone, wood, ruin, dark, rock, iron)
+  playtest/          the scene the Play buttons launch
+levels/              levels built with the tools (example_camp.tscn)
+prefabs/             saved prefabs (hut.tscn)
 tests/
   smoke_test.tscn    headless playtest of the core mechanics
+  level_tools_test.tscn  headless test of the level tools and the example level
   screenshots.tscn   renders the images in docs/screenshots
 ```
 
-Tuning lives in constants at the top of each script (`player.gd` speeds and
-damage, `enemy.gd` `KINDS`, `game.gd` day length).
+Jeffrey's movement and feel are tuned in the Inspector: open
+`scenes/player.tscn`, select the root **Jeffrey** node, and adjust the
+*Movement*, *Head Bob*, *Landing*, *Lean*, *Combat* and *Grappling Hook*
+groups. Hover any value for a description. Enemy stats are still in
+`enemy.gd` `KINDS`, and the day length is in `game.gd`.
 
 ## Tests
 
@@ -86,9 +114,17 @@ damage, `enemy.gd` `KINDS`, `game.gd` day length).
 godot --headless --path . res://tests/smoke_test.tscn
 ```
 
-Prints `PASS`/`FAIL` for 19 checks (grapple routes, ramp, day/night visibility,
+Prints `PASS`/`FAIL` for 27 checks (weighty acceleration, head bob, torch light,
+footsteps, lean, fall damage, grapple routes, ramp, day/night visibility,
 Hollows only at night, a Warden spotting and killing Jeffrey, respawn,
 blocking, resting, reaching the tree) and exits non-zero on failure.
+
+```
+godot --headless --path . res://tests/level_tools_test.tscn
+```
+
+Checks the level tools (34 checks: terrain brushes, every palette piece,
+prefabs, new levels) and plays `levels/example_camp.tscn` through the game.
 
 The full design lives in [docs/GDD.md](docs/GDD.md).
 

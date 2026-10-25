@@ -3,9 +3,13 @@ extends Node3D
 ## resting, dying, and the Colossus's occasional footsteps.
 
 const World := preload("res://scripts/world.gd")
-const Player := preload("res://scripts/player.gd")
+const PlayerScene := preload("res://scenes/player.tscn")
 const Hud := preload("res://scripts/hud.gd")
 const DayNight := preload("res://scripts/day_night.gd")
+
+## A level built with the Level Tools (addons/jbd_level_tools). Leave it
+## empty to play the code-built greybox in world.gd.
+@export var level_scene: PackedScene
 
 var world: Node3D
 var player: CharacterBody3D
@@ -21,12 +25,17 @@ var first_tremor := true
 func _ready() -> void:
 	_setup_input()
 	add_child(DayNight.new())
-	world = World.new()
+	world = level_scene.instantiate() if level_scene else World.new()
 	add_child(world)
+	var start := get_tree().get_first_node_in_group("player_start") as Node3D
+	if start:
+		Game.checkpoint_position = start.global_position
 
-	player = Player.new()
+	player = PlayerScene.instantiate()
 	add_child(player)
 	player.global_position = Game.checkpoint_position
+	if start:
+		player.rotation.y = start.global_rotation.y
 
 	hud = Hud.new()
 	add_child(hud)
@@ -55,8 +64,10 @@ func _setup_input() -> void:
 	_bind("crouch", [KEY_CTRL, KEY_C])
 	_bind("attack", [], [MOUSE_BUTTON_LEFT])
 	_bind("block", [], [MOUSE_BUTTON_RIGHT])
-	_bind("grapple", [KEY_Q], [MOUSE_BUTTON_MIDDLE])
-	_bind("interact", [KEY_F, KEY_E])
+	_bind("grapple", [KEY_G], [MOUSE_BUTTON_MIDDLE])
+	_bind("lean_left", [KEY_Q])
+	_bind("lean_right", [KEY_E])
+	_bind("interact", [KEY_F])
 	_bind("rest_morning", [KEY_1])
 	_bind("rest_evening", [KEY_2])
 	_bind("toggle_help", [KEY_H])
