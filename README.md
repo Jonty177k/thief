@@ -90,6 +90,8 @@ Prints `PASS`/`FAIL` for 19 checks (grapple routes, ramp, day/night visibility,
 Hollows only at night, a Warden spotting and killing Jeffrey, respawn,
 blocking, resting, reaching the tree) and exits non-zero on failure.
 
+The full design lives in [docs/GDD.md](docs/GDD.md).
+
 ## Not in this slice yet
 
 Sound, real art, enemy navmesh pathing (enemies walk straight at you and stop
