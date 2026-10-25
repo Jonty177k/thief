@@ -1,9 +1,11 @@
 extends Node3D
 ## A campfire checkpoint. Touch it to make it your respawn point,
-## rest at it to heal and skip to morning or evening.
+## use it (Interact) to rest: heal and skip to morning or evening.
 
 signal player_entered(fire: Node3D)
 signal player_exited(fire: Node3D)
+## Jeffrey used the fire. Main opens the rest menu.
+signal rest_requested(fire: Node3D)
 
 var fire_name := "Campfire"
 var kindled := false
@@ -50,6 +52,23 @@ func _ready() -> void:
 	light.shadow_enabled = true
 	light.position.y = 1.0
 	add_child(light)
+
+	# Something for the interaction ray to land on (layer 4: not solid).
+	var body := StaticBody3D.new()
+	body.collision_layer = 8
+	body.collision_mask = 0
+	var body_shape := CollisionShape3D.new()
+	var cyl := CylinderShape3D.new()
+	cyl.radius = 0.7
+	cyl.height = 1.0
+	body_shape.shape = cyl
+	body_shape.position.y = 0.5
+	body.add_child(body_shape)
+	add_child(body)
+	var use := Interactable.new()
+	use.prompt = "Rest at %s" % fire_name
+	use.interacted.connect(func(_by: Node) -> void: rest_requested.emit(self))
+	body.add_child(use)
 
 	var area := Area3D.new()
 	area.collision_layer = 0

@@ -23,6 +23,8 @@ const KINDS := {
 
 const GRAVITY := 18.0
 const ATTACK_RANGE := 2.2
+## Damage multiplier for a blow from behind on an enemy that hasn't noticed you.
+const BACKSTAB_MULTIPLIER := 4.0
 const LOSE_TIME := 3.5
 const SEARCH_TIME := 6.0
 
@@ -144,6 +146,17 @@ func is_unaware_of_behind(from: Vector3) -> bool:
 	var to_from := from - global_position
 	to_from.y = 0
 	return _forward().dot(to_from.normalized()) < -0.3
+
+
+## The damage interface (see DamageInfo): Jeffrey's sword lands here.
+func receive_damage(info: DamageInfo) -> void:
+	if not is_alive():
+		return
+	var amount := info.amount
+	if is_unaware_of_behind(info.origin):
+		amount *= BACKSTAB_MULTIPLIER
+	velocity += info.direction * info.knockback * 0.3
+	take_damage(amount, info.origin)
 
 
 func take_damage(amount: float, from: Vector3) -> void:
@@ -326,7 +339,7 @@ func _attack_windup(delta: float) -> void:
 		var to_p: Vector3 = player.global_position - global_position
 		to_p.y = 0
 		if to_p.length() < ATTACK_RANGE + 0.6 and _forward().dot(to_p.normalized()) > 0.4:
-			player.take_hit(stats.damage, global_position)
+			player.receive_damage(DamageInfo.make(stats.damage, self, global_position, player.global_position, 6.0, "enemy"))
 
 
 func _search(delta: float) -> void:

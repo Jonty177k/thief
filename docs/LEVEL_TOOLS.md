@@ -58,8 +58,9 @@ blocks, terrain, or the ground plane.
 - **Snap to grid** with 0.25 to 4 m steps. *Snap height too* also snaps Y.
 - **Scatter**: drag to paint copies every *Spacing* metres, with random turn
   and size. Good for rocks and bone spurs.
-- New pieces go into tidy groups (`Gameplay`, `Building`, `Nature`,
-  `Enemies`, `Prefabs`) under the level root.
+- New pieces go into tidy groups (`Gameplay`, `Ground`, `Mountains`,
+  `Bridges & Ladders`, `Building`, `Nature`, `Enemies`, `Prefabs`) under the
+  level root.
 
 After placing, use Godot's own gizmos to move and rotate, Ctrl+D to
 duplicate, and Delete to remove. Change a block's **Size** in the Inspector
@@ -77,6 +78,44 @@ rather than scaling it, so its collision stays exact.
 | Player start | Where Jeffrey wakes up. Faces -Z. |
 | Shadow zone | Deep shadow: dims the light gem. Set *Size* in the Inspector. |
 | Level exit | Reaching it completes the level. |
+| Door | Swings open with Interact. Tick *Locked* to make it a gate that a lever opens. |
+| Lever | Set *Target* to a door (or anything with `activate()`). Pulling it unlocks and opens it. |
+| Pickup | Picked up with Interact. Set *Item Name*. |
+| Training dummy | Straw dummy that shows the damage of each hit and how many hits a swing landed. |
+| Attack dummy | Swings at Jeffrey every *Attack Interval* seconds, for testing the shield. |
+
+### Ground, mountains, bridges and ladders
+
+For blocking out the opening area. The landforms are rough, noise-shaped
+rock and turf, all one node type, **JBDLandform**, so any of them can be
+turned into another by changing *Form* in the Inspector.
+
+| Category | Pieces |
+| --- | --- |
+| Ground | Grass tile (8 × 8 m), big grass tile (16 × 16 m), dirt tile, rocky ground, grassy slope, hill |
+| Mountains | Cliff, tall cliff, rock ledge, mesa (flat-topped plateau), spire, small mountain, mountain |
+| Bridges & Ladders | Ladder (4 m), tall ladder (8 m), plank bridge, rope bridge, stone bridge |
+
+**Landforms.** *Size* is the footprint and height. *Rock Seed* gives a
+different shape, *Roughness* how lumpy it is and *Feature Size* how big the
+lumps are. *Top Material* and *Side Material* paint the walkable top and the
+rock sides. Slopes, hills and mesa tops are gentle enough to walk on; cliff
+faces, spires and mountain flanks are too steep and slide you off. Collision
+follows the shape exactly.
+
+**Ladders** snap to walls: point at a cliff or wall and the ladder appears
+against it, facing out, with its foot on the ground below. Set *Height* in
+the Inspector. You climb by walking into it, and step off the top onto
+whatever is there. Look down and walk backward to climb down.
+
+**Bridges** start at the piece's origin and span toward -Z (the blue arrow
+points back toward where you placed it), with the deck's top at the origin.
+Place one on the edge of a cliff, turn it with **R** to face the far side,
+and set *Length* to reach. *Style* is plank (with rails), rope (sagging,
+with rope rails) or stone (an arch). *Width*, *Sag*, *Railings* and *Arch Depth* are in the
+Inspector.
+
+![Rope bridge in the test area](screenshots/controller_07_rope_bridge.png)
 
 ### Enemies
 
@@ -116,8 +155,8 @@ every copy in every level updates.
 - The time-of-day menu picks the starting hour (or uses the level's
   *Start Hour* from the Inspector on the level root).
 - **Make this the game's level** sets *Level Scene* on `scenes/main.tscn`, so
-  F5 starts there. Clear that field to go back to the greybox in
-  `scripts/world.gd`.
+  F5 starts there. It's set to `levels/controller_test.tscn` right now.
+  Clear that field to go back to the greybox in `scripts/world.gd`.
 
 ## Tests
 
@@ -125,8 +164,9 @@ every copy in every level updates.
 godot --headless --path . res://tests/level_tools_test.tscn
 ```
 
-Checks every terrain brush, every palette piece, block collision, prefab
-saving, new-level creation, and plays `levels/example_camp.tscn` through the
+Checks every terrain brush, every palette piece, block and landform
+collision, ladder wall-fitting, bridge decks, prefab saving, new-level
+creation, and plays `levels/example_camp.tscn` through the
 real game: start position, campfire checkpoint, enemy patrols, walking the
 carved ramp, standing in the hut, and the level exit.
 

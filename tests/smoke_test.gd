@@ -1,6 +1,8 @@
 extends Node
-## Headless playtest: godot --headless --path . res://tests/smoke_test.tscn
-## Drives Jeffrey through the core mechanics and prints PASS/FAIL lines.
+## Headless playtest of the greybox Colossus slice (scenes/greybox_slice.tscn):
+##   godot --headless --path . res://tests/smoke_test.tscn
+## Drives Jeffrey through the slice and prints PASS/FAIL lines. The
+## controller itself is covered in more depth by tests/controller_test.tscn.
 
 var main: Node3D
 var p: CharacterBody3D
@@ -8,7 +10,7 @@ var failures := 0
 
 
 func _ready() -> void:
-	main = load("res://scenes/main.tscn").instantiate()
+	main = load("res://scenes/greybox_slice.tscn").instantiate()
 	add_child(main)
 	p = main.player
 	await _run()
@@ -36,15 +38,14 @@ func aim_at(target: Vector3) -> void:
 	p.rotation.y = atan2(-d.x, -d.z)
 	await get_tree().physics_frame
 	var c: Vector3 = target - p.camera.global_position
-	p.head.rotation.x = atan2(c.y, Vector2(c.x, c.z).length())
+	p.camera_rig.set_pitch_degrees(rad_to_deg(atan2(c.y, Vector2(c.x, c.z).length())))
 	await get_tree().physics_frame
 	await get_tree().physics_frame
 
 
 func grapple_to(target: Vector3) -> void:
 	await aim_at(target)
-	p._update_aim()
-	p._try_grapple()
+	main.grapple.fire()
 	await wait(3.0)
 
 
@@ -56,6 +57,7 @@ func _run() -> void:
 	# Weighty movement: Jeffrey takes a moment to get up to speed and to stop.
 	place(Vector3(0, 0.1, 6))
 	p.rotation.y = 0.0
+	p.camera_rig.head_bob_enabled = true  # off by default; check it still works
 	await wait(0.5)
 	var steps := [0]
 	p.footstep.connect(func(_loud): steps[0] += 1)
@@ -67,7 +69,7 @@ func _run() -> void:
 		await get_tree().physics_frame
 		cam_y.append(p.camera.position.y)
 	var cruising: float = Vector2(p.velocity.x, p.velocity.z).length()
-	check("ramps up to speed", early < p.walk_speed * 0.5 and cruising > p.walk_speed * 0.9, "%.2f then %.2f" % [early, cruising])
+	check("ramps up to speed", early < p.movement.walk_speed * 0.5 and cruising > p.movement.walk_speed * 0.9, "%.2f then %.2f" % [early, cruising])
 	check("head bobs while walking", cam_y.max() - cam_y.min() > 0.01, "range %.3f" % (cam_y.max() - cam_y.min()))
 	await wait(1.0)
 	check("footsteps fire while walking", steps[0] >= 2, "%d steps" % steps[0])
@@ -76,13 +78,7 @@ func _run() -> void:
 	var sliding: float = Vector2(p.velocity.x, p.velocity.z).length()
 	await wait(0.5)
 	check("slides briefly to a stop", sliding > 0.5 and Vector2(p.velocity.x, p.velocity.z).length() < 0.05, "%.2f" % sliding)
-
-	# Lean shifts the view sideways.
-	Input.action_press("lean_right")
-	await wait(0.6)
-	check("lean right peeks sideways", p.camera.position.x > p.lean_distance * 0.8, "x %.2f" % p.camera.position.x)
-	Input.action_release("lean_right")
-	await wait(0.6)
+	p.camera_rig.head_bob_enabled = false
 
 	# A long fall hurts and dips the camera; a short one doesn't.
 	p.heal_full()
@@ -93,7 +89,7 @@ func _run() -> void:
 	var dipped := [0.0]
 	for i in 90:
 		await get_tree().physics_frame
-		dipped[0] = maxf(dipped[0], p.land_dip)
+		dipped[0] = maxf(dipped[0], p.camera_rig._land_dip)
 	check("long fall hurts and dips the view", p.hp < p.max_hp and dipped[0] > 0.1, "hp %.0f dip %.2f" % [p.hp, dipped[0]])
 	p.heal_full()
 
@@ -101,9 +97,8 @@ func _run() -> void:
 	place(Vector3(10, 0.1, 12))
 	await wait(0.5)
 	await aim_at(Vector3(10, 6.2, 4))
-	p._update_aim()
-	check("crosshair sees the wooden anchor", p.aim_grapple_valid)
-	p._try_grapple()
+	check("crosshair sees the wooden anchor", main.grapple.aim_valid)
+	main.grapple.fire()
 	await wait(2.5)
 	check("grapple onto lookout pillar", p.global_position.y > 6.0, str(p.global_position))
 
@@ -125,8 +120,7 @@ func _run() -> void:
 	place(Vector3(0, 0.1, -50))
 	await wait(0.5)
 	await aim_at(Vector3(0, 6, -60))
-	p._update_aim()
-	check("grapple ignores stone", not p.aim_grapple_valid)
+	check("grapple ignores stone", not main.grapple.aim_valid)
 
 	# Walk up the guarded left ramp.
 	place(Vector3(-27, 0.2, -27))
@@ -184,15 +178,15 @@ func _run() -> void:
 	# Sword is pitiful against a warden.
 	warden.reset_to_post()
 	var hp_before: float = warden.hp
-	warden.take_damage(p.sword_damage, p.global_position)
-	check("sword barely scratches a warden", warden.hp == hp_before - p.sword_damage and warden.hp > 200)
+	warden.take_damage(p.sword.light_damage, p.global_position)
+	check("sword barely scratches a warden", warden.hp == hp_before - p.sword.light_damage and warden.hp > 200)
 
 	# Blocking soaks most of a hit.
 	warden.reset_to_post()
 	place(Vector3(0, 0.1, 0))
 	await wait(0.5)
 	p.heal_full()
-	p.blocking = true
+	p.shield.raised = true
 	p.rotation.y = 0.0
 	p.take_hit(40.0, p.global_position + Vector3(0, 0, -2))
 	check("shield blocks most damage", p.hp > 90.0, "hp %.0f" % p.hp)

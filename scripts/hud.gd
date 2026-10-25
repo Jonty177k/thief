@@ -1,9 +1,8 @@
 extends CanvasLayer
-## Health, stamina, the light gem, the clock, prompts and the rest menu.
+## Health, the light gem, the clock, prompts and the rest menu.
 ## Everything is built in code so the scene file stays tiny.
 
 var health_bar: ProgressBar
-var stamina_bar: ProgressBar
 var gem: Panel
 var gem_style: StyleBoxFlat
 var clock: Label
@@ -12,6 +11,8 @@ var prompt: Label
 var message: Label
 var rest_menu: PanelContainer
 var rest_title: Label
+var rest_options: Label
+var grapple_enabled := true
 var help: Label
 var fade: ColorRect
 var flash: ColorRect
@@ -25,9 +26,7 @@ func _ready() -> void:
 	add_child(root)
 
 	health_bar = _bar(Color(0.65, 0.12, 0.1), Vector2(8, 8), Vector2(120, 6))
-	stamina_bar = _bar(Color(0.25, 0.55, 0.2), Vector2(8, 17), Vector2(100, 5))
 	root.add_child(health_bar)
-	root.add_child(stamina_bar)
 
 	# The light gem, Thief-style: bright means seen.
 	gem_style = StyleBoxFlat.new()
@@ -84,12 +83,10 @@ func _ready() -> void:
 	message.modulate.a = 0.0
 	root.add_child(message)
 
-	help = _label(10, HORIZONTAL_ALIGNMENT_LEFT)
-	help.position = Vector2(8, 30)
-	help.text = "WASD move   Shift sprint   Ctrl/C crouch   Space jump\n" \
-		+ "LMB sword   RMB shield   G / MMB grapple (wood only)   Q/E lean\n" \
-		+ "F rest at campfire   Esc free mouse   H hide this"
+	help = _label(9, HORIZONTAL_ALIGNMENT_LEFT)
+	help.position = Vector2(8, 20)
 	help.modulate = Color(1, 1, 1, 0.8)
+	_update_help()
 	root.add_child(help)
 
 	_build_rest_menu(root)
@@ -151,9 +148,8 @@ func _build_rest_menu(root: Control) -> void:
 	rest_menu.add_child(box)
 	rest_title = _label(14, HORIZONTAL_ALIGNMENT_CENTER)
 	box.add_child(rest_title)
-	var opts := _label(11, HORIZONTAL_ALIGNMENT_LEFT)
-	opts.text = "[1]  Rest until morning\n[2]  Rest until evening\n[F]  Get up"
-	box.add_child(opts)
+	rest_options = _label(11, HORIZONTAL_ALIGNMENT_LEFT)
+	box.add_child(rest_options)
 	rest_menu.visible = false
 	root.add_child(rest_menu)
 
@@ -163,9 +159,19 @@ func set_health(hp: float, max_hp: float) -> void:
 	health_bar.value = hp
 
 
-func set_stamina(st: float, max_st: float) -> void:
-	stamina_bar.max_value = max_st
-	stamina_bar.value = st
+func set_grapple_enabled(on: bool) -> void:
+	grapple_enabled = on
+	_update_help()
+	if not on:
+		crosshair.text = "+"
+
+
+func _update_help() -> void:
+	help.text = "WASD move   Shift run   Ctrl crouch   Space jump   Alt dash\n" \
+		+ "LMB light attack   F heavy attack   RMB shield   E use\n" \
+		+ ("G grapple (wood only)   " if grapple_enabled else "") + "F3 debug   Esc free mouse   H hide this\n" \
+		+ "Pad: L-stick move  R-stick look  L2 run  L1 shield  R1/R2 attack\n" \
+		+ "     Cross jump  Circle dash  Square use  Triangle crouch"
 
 
 func set_visibility(v: float) -> void:
@@ -197,8 +203,12 @@ func show_message(text: String, hold := 2.5, color := Color(0.95, 0.88, 0.7)) ->
 	message_tween.tween_property(message, "modulate:a", 0.0, 0.8)
 
 
-func open_rest_menu(fire_name: String) -> void:
+func open_rest_menu(fire_name: String, gamepad := false) -> void:
 	rest_title.text = fire_name
+	if gamepad:
+		rest_options.text = "[D-pad up]    Rest until morning\n[D-pad down]  Rest until evening\n[Circle]      Get up"
+	else:
+		rest_options.text = "[1]  Rest until morning\n[2]  Rest until evening\n[E]  Get up"
 	rest_menu.visible = true
 
 
@@ -210,8 +220,10 @@ func toggle_help() -> void:
 	help.visible = not help.visible
 
 
-func flash_damage() -> void:
-	flash.color.a = 0.45
+## Red for a hit, a pale flash for a blocked one.
+func flash_damage(info: DamageInfo = null) -> void:
+	var blocked := info != null and info.blocked
+	flash.color = Color(0.85, 0.9, 1.0, 0.25) if blocked else Color(0.7, 0.05, 0.02, 0.45)
 	create_tween().tween_property(flash, "color:a", 0.0, 0.4)
 
 

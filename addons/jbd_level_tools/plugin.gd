@@ -313,11 +313,16 @@ func _pick(camera: Camera3D, screen: Vector2) -> void:
 			_place_valid = true
 
 
-func _placement_transform() -> Transform3D:
+func _placement_transform(node: Node3D = null) -> Transform3D:
 	var pos := _place_pos
 	var yaw := _ghost_yaw
 	if Catalog.wall_mounted(dock.armed_item) and absf(_place_normal.y) < 0.7:
 		yaw = atan2(-_place_normal.x, -_place_normal.z)
+		var xf := Transform3D(Basis(Vector3.UP, yaw), pos)
+		var root := get_editor_interface().get_edited_scene_root()
+		if node and root is Node3D:
+			xf = Catalog.fit_to_wall(node, xf, _place_normal, (root as Node3D).get_world_3d().direct_space_state)
+		return xf
 	elif dock.snap_enabled:
 		pos = Catalog.snap(pos, dock.grid_step, dock.snap_y)
 	return Transform3D(Basis(Vector3.UP, yaw), pos)
@@ -338,7 +343,7 @@ func _update_ghost() -> void:
 		root.get_parent().add_child(_ghost)
 		_disable_collision(_ghost)
 	_ghost.visible = _place_valid
-	_ghost.global_transform = _placement_transform()
+	_ghost.global_transform = _placement_transform(_ghost)
 
 
 func _disable_collision(n: Node) -> void:
@@ -360,7 +365,7 @@ func _place() -> void:
 	var root := get_editor_interface().get_edited_scene_root()
 	var id := dock.armed_item
 	var node := Catalog.make(id, _rng)
-	var xf := _placement_transform()
+	var xf := _placement_transform(node)
 	if dock.scatter:
 		if dock.random_yaw:
 			xf.basis = Basis(Vector3.UP, _rng.randf() * TAU)
