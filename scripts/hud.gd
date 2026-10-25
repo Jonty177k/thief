@@ -87,7 +87,7 @@ func _ready() -> void:
 	help = _label(10, HORIZONTAL_ALIGNMENT_LEFT)
 	help.position = Vector2(8, 30)
 	help.text = "WASD move   Shift sprint   Ctrl/C crouch   Space jump\n" \
-		+ "LMB sword   RMB shield   Q / MMB grapple (wood only)\n" \
+		+ "LMB sword   RMB shield   G / MMB grapple (wood only)   Q/E lean\n" \
 		+ "F rest at campfire   Esc free mouse   H hide this"
 	help.modulate = Color(1, 1, 1, 0.8)
 	root.add_child(help)

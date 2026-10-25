@@ -53,6 +53,50 @@ func _run() -> void:
 	await wait(1.5)
 	check("spawn lands on the haunch", absf(p.global_position.y) < 0.3 and p.is_on_floor(), str(p.global_position))
 
+	# Weighty movement: Jeffrey takes a moment to get up to speed and to stop.
+	place(Vector3(0, 0.1, 6))
+	p.rotation.y = 0.0
+	await wait(0.5)
+	var steps := [0]
+	p.footstep.connect(func(_loud): steps[0] += 1)
+	Input.action_press("move_forward")
+	await wait(0.1)
+	var early: float = Vector2(p.velocity.x, p.velocity.z).length()
+	var cam_y: Array[float] = []
+	for i in 30:
+		await get_tree().physics_frame
+		cam_y.append(p.camera.position.y)
+	var cruising: float = Vector2(p.velocity.x, p.velocity.z).length()
+	check("ramps up to speed", early < p.walk_speed * 0.5 and cruising > p.walk_speed * 0.9, "%.2f then %.2f" % [early, cruising])
+	check("head bobs while walking", cam_y.max() - cam_y.min() > 0.01, "range %.3f" % (cam_y.max() - cam_y.min()))
+	await wait(1.0)
+	check("footsteps fire while walking", steps[0] >= 2, "%d steps" % steps[0])
+	Input.action_release("move_forward")
+	await wait(0.1)
+	var sliding: float = Vector2(p.velocity.x, p.velocity.z).length()
+	await wait(0.5)
+	check("slides briefly to a stop", sliding > 0.5 and Vector2(p.velocity.x, p.velocity.z).length() < 0.05, "%.2f" % sliding)
+
+	# Lean shifts the view sideways.
+	Input.action_press("lean_right")
+	await wait(0.6)
+	check("lean right peeks sideways", p.camera.position.x > p.lean_distance * 0.8, "x %.2f" % p.camera.position.x)
+	Input.action_release("lean_right")
+	await wait(0.6)
+
+	# A long fall hurts and dips the camera; a short one doesn't.
+	p.heal_full()
+	place(Vector3(0, 1.5, 6))
+	await wait(1.0)
+	check("short drop is harmless", p.hp == p.max_hp)
+	place(Vector3(0, 11.0, 6))
+	var dipped := [0.0]
+	for i in 90:
+		await get_tree().physics_frame
+		dipped[0] = maxf(dipped[0], p.land_dip)
+	check("long fall hurts and dips the view", p.hp < p.max_hp and dipped[0] > 0.1, "hp %.0f dip %.2f" % [p.hp, dipped[0]])
+	p.heal_full()
+
 	# Grapple onto the lookout pillar.
 	place(Vector3(10, 0.1, 12))
 	await wait(0.5)
@@ -130,8 +174,8 @@ func _run() -> void:
 	# Sword is pitiful against a warden.
 	warden.reset_to_post()
 	var hp_before: float = warden.hp
-	warden.take_damage(p.SWORD_DAMAGE, p.global_position)
-	check("sword barely scratches a warden", warden.hp == hp_before - p.SWORD_DAMAGE and warden.hp > 200)
+	warden.take_damage(p.sword_damage, p.global_position)
+	check("sword barely scratches a warden", warden.hp == hp_before - p.sword_damage and warden.hp > 200)
 
 	# Blocking soaks most of a hit.
 	warden.reset_to_post()

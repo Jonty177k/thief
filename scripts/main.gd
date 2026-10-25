@@ -3,7 +3,7 @@ extends Node3D
 ## resting, dying, and the Colossus's occasional footsteps.
 
 const World := preload("res://scripts/world.gd")
-const Player := preload("res://scripts/player.gd")
+const PlayerScene := preload("res://scenes/player.tscn")
 const Hud := preload("res://scripts/hud.gd")
 const DayNight := preload("res://scripts/day_night.gd")
 
@@ -24,7 +24,7 @@ func _ready() -> void:
 	world = World.new()
 	add_child(world)
 
-	player = Player.new()
+	player = PlayerScene.instantiate()
 	add_child(player)
 	player.global_position = Game.checkpoint_position
 
@@ -55,8 +55,10 @@ func _setup_input() -> void:
 	_bind("crouch", [KEY_CTRL, KEY_C])
 	_bind("attack", [], [MOUSE_BUTTON_LEFT])
 	_bind("block", [], [MOUSE_BUTTON_RIGHT])
-	_bind("grapple", [KEY_Q], [MOUSE_BUTTON_MIDDLE])
-	_bind("interact", [KEY_F, KEY_E])
+	_bind("grapple", [KEY_G], [MOUSE_BUTTON_MIDDLE])
+	_bind("lean_left", [KEY_Q])
+	_bind("lean_right", [KEY_E])
+	_bind("interact", [KEY_F])
 	_bind("rest_morning", [KEY_1])
 	_bind("rest_evening", [KEY_2])
 	_bind("toggle_help", [KEY_H])
