@@ -18,6 +18,8 @@ var knockback := 0.0
 var kind := ""
 ## Set by the receiver: true when a shield caught it.
 var blocked := false
+## Set by the receiver: true when a dodge's i-frames let it pass.
+var dodged := false
 
 
 static func make(p_amount: float, p_source: Node3D, p_origin: Vector3, p_target: Vector3, p_knockback := 0.0, p_kind := "") -> DamageInfo:

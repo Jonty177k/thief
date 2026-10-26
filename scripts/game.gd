@@ -3,6 +3,8 @@ extends Node
 ## and shared helpers for daylight and night.
 
 signal hour_changed(hour: float)
+## Something made a sound (see NoiseEvent). Enemies and the stealth system listen.
+signal noise_made(event: NoiseEvent)
 
 ## One full day/night cycle in real seconds.
 const DAY_LENGTH_SECONDS := 600.0
@@ -56,3 +58,10 @@ func clock_text() -> String:
 	var h := int(hour)
 	var m := int((hour - h) * 60.0)
 	return "Day %d  %02d:%02d  %s" % [day, h, m, "Night" if is_night() else "Day"]
+
+
+## Tell every listener about a sound. Returns the event.
+func emit_noise(position: Vector3, radius: float, source: Node = null, kind := "", alarm := 0.5) -> NoiseEvent:
+	var e := NoiseEvent.make(position, radius, source, kind, alarm)
+	noise_made.emit(e)
+	return e

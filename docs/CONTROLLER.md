@@ -47,6 +47,11 @@ picking a device number.
 | Dash | Circle | Alt |
 | Interact / open / pick up | Square | E |
 | Crouch (toggle) | Triangle | Ctrl (or C) |
+| Sword and shield / bow / hookshot | D-pad left / right / down | 1 / 2 / 3 |
+| Bow: cycle arrow type | D-pad up | Q or mouse wheel |
+| Hookshot: fire / set an anchor | R2 | Left mouse or F |
+| Hookshot: hook or wire mode | L1 | Right mouse |
+| On a wire: walk / jump off / step or drop off | Left stick / Cross / Circle | W S / Space / Alt |
 | Rest menu: morning / evening / get up | D-pad up / D-pad down / Circle | 1 / 2 / E |
 | Debug readout | Options | F3 |
 | Fullscreen / window | | F11 |
@@ -211,41 +216,16 @@ The left stick's deadzone is *Move Deadzone* (0.15) on the **Input** node.
 | Recovery | 0.25 s | Before the next dash |
 | Falloff | 0.5 | 0 = constant speed, 1 = slows to a stop |
 | Exit Speed | 3.2 m/s | Carried out, so it blends into walking |
-| I Frame Time | 0 s | Invulnerability; off for now |
+| I Frame Start / End | 0.06 / 0.20 s | Invulnerable only inside this window |
 | Allow In Air | off | |
 | Cancels Light Recovery | on | |
 
 With the stick centred, the dash goes backward.
 
-### Sword
+### Sword, shield and stamina
 
-| Setting | Light | Heavy |
-| --- | --- | --- |
-| Windup | 0.08 s | 0.42 s |
-| Active | 0.12 s | 0.16 s |
-| Recovery | 0.22 s | 0.55 s |
-| Damage | 10 | 30 |
-| Range | 2.0 m | 2.4 m |
-| Knockback | 2 m/s | 7 m/s |
-| Move Multiplier | 0.75 | 0.35 |
-
-Light attacks chain (*Light Chaining*, up to *Light Chain Max* = 3 swings,
-alternating direction). *Blade Radius* (0.18 m) is the thickness of the swept
-blade, and *Input Buffer* (0.15 s) lets an early press count. While active,
-the blade is swept as a shape cast from the eye through its arc, so it stops
-at walls and hits each target at most once per swing.
-
-### Shield
-
-| Setting | Default | Notes |
-| --- | --- | --- |
-| Block Arc Degrees | 120° | Protected cone in front |
-| Blocked Damage Multiplier | 0.15 | Damage that still gets through |
-| Blocked Knockback Multiplier | 0.4 | |
-| Move Multiplier | 0.55 | Speed with the shield up |
-
-A block gives a metallic clank, a shield jolt, a small camera kick and a pale
-screen flash. There is no parry yet.
+Melee combat (the sword, shield, stamina, dodge i-frames and the swordsman
+enemy) has its own guide with every tuning value: [COMBAT.md](COMBAT.md).
 
 ### Interaction
 
@@ -323,8 +303,8 @@ From the spec, in the test area:
 
 Where the spec and the GDD disagree, this follows the spec:
 
-- **No stamina.** The first prototype's stamina bar (sprint, attacks and
-  blocking all cost it) is gone. Run is hold-to-run with no limit.
+- **Stamina is for combat only.** Attacks, dodges and blocks cost it
+  (see [COMBAT.md](COMBAT.md)); walking and running never do.
 - **No mantle.** Jumping at a ledge used to climb it. The spec says no
   mantle yet, so 1.2 m ledges are now too high (the test area has one to
   show this). The grappling hook still clambers onto a ledge at the end of a pull.
@@ -335,8 +315,8 @@ Where the spec and the GDD disagree, this follows the spec:
 - **No lean.** Q/E lean is gone; E is now Interact.
 - **Rest at a campfire** is now Interact (E / Square) on the fire, not F.
   F is the heavy attack.
-- **Shield** blocks a 120° frontal cone and lets 15% of the damage through,
-  which is the GDD's "soaks most of a hit" without the stamina cost.
+- **Shield** blocks a 120° frontal cone completely, for stamina; a block you
+  can't pay for breaks your guard.
 - **Capsule plus a ray leg.** The body is a capsule, as the spec asks, riding
   on a short downward ray (a SeparationRayShape3D) so stairs and kerbs are
   walked up smoothly. Walking off a ledge drops you cleanly; steep slopes

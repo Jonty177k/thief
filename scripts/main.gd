@@ -17,6 +17,7 @@ var world: Node3D
 var player: JBDPlayer
 var hud: CanvasLayer
 var debug: CanvasLayer
+var hitboxes: HitboxDebug
 var grapple: GrappleHook
 
 var resting_fire: Node3D
@@ -58,8 +59,13 @@ func _ready() -> void:
 	debug.player = player
 	debug.visible = _level_setting("show_debug_overlay", false)
 	add_child(debug)
+	hitboxes = HitboxDebug.new()
+	hitboxes.player = player
+	hitboxes.visible = debug.visible
+	add_child(hitboxes)
 
 	player.health_changed.connect(hud.set_health)
+	player.stamina.changed.connect(hud.set_stamina)
 	player.took_hit.connect(hud.flash_damage)
 	player.died.connect(_on_player_died)
 	player.notice.connect(func(text: String) -> void: hud.show_message(text, 1.5))
@@ -102,6 +108,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		hud.toggle_help()
 	elif event.is_action_pressed("toggle_debug"):
 		debug.visible = not debug.visible
+		hitboxes.visible = debug.visible
 	elif event.is_action_pressed("debug_time"):
 		Game.set_hour(Game.hour + 1.0)
 	elif menu_open:
@@ -115,8 +122,12 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _process(delta: float) -> void:
 	hud.set_visibility(player.visibility)
-	hud.set_grapple_aim(grapple != null and grapple.aim_valid)
+	if player.tool and player.loadout.current == PlayerLoadout.Slot.TOOL:
+		hud.set_tool_aim(player.tool.aim)
+	else:
+		hud.set_grapple_aim(grapple != null and grapple.aim_valid)
 	hud.set_clock(Game.clock_text())
+	_update_weapon_hud()
 
 	if not _level_setting("colossus_tremors", true):
 		return
@@ -127,6 +138,21 @@ func _process(delta: float) -> void:
 		if first_tremor:
 			first_tremor = false
 			hud.show_message("The Colossus takes a step.", 2.0)
+
+
+func _update_weapon_hud() -> void:
+	var lo := player.loadout
+	var slot := lo.pending if lo.switching() else lo.current
+	var text := lo.slot_name(slot)
+	var color := Color(0.95, 0.88, 0.7)
+	if slot == PlayerLoadout.Slot.BOW:
+		var t := player.bow.current_type()
+		var n := player.bow.count_for(t)
+		text += "\n%s  %s" % [t.name, "(unlimited)" if n < 0 else "x%d" % n]
+		color = t.color.lerp(Color.WHITE, 0.35)
+	elif slot == PlayerLoadout.Slot.TOOL and player.tool:
+		text += "\n" + player.tool.mode_name()
+	hud.set_weapon(text, color)
 
 
 func _on_fire_entered(fire: Node3D) -> void:

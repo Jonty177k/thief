@@ -10,6 +10,8 @@ var visibility := 0.5
 var noise_radius := 0.0
 var shadow_zones := 0
 var player: CharacterBody3D
+## Lights only count when nothing solid stands between them and Jeffrey.
+var light_occlusion := true
 
 
 func setup(p: CharacterBody3D) -> void:
@@ -28,7 +30,7 @@ func physics_update(delta: float) -> void:
 	for l in lights:
 		var radius: float = l.get("light_radius") if l.get("light_radius") != null else 10.0
 		var d: float = l.global_position.distance_to(player.global_position)
-		if d < radius:
+		if d < radius and _lit_by(l):
 			light = maxf(light, 0.95 * (1.0 - d / radius))
 	if shadow_zones > 0:
 		light *= 0.35
@@ -48,3 +50,13 @@ func physics_update(delta: float) -> void:
 	if moving and player.is_on_floor():
 		n = 11.0 if mv.running else (0.0 if mv.crouching else 3.5)
 	noise_radius = maxf(n, noise_radius - delta * 20.0)
+
+
+## Is there a clear line from light `l` to Jeffrey's chest?
+func _lit_by(l: Node3D) -> bool:
+	if not light_occlusion:
+		return true
+	var from := l.global_position + Vector3.UP * 0.3
+	var q := PhysicsRayQueryParameters3D.create(from, player.global_position + Vector3.UP * 1.2, 1)
+	q.exclude = [player.get_rid()]
+	return player.get_world_3d().direct_space_state.intersect_ray(q).is_empty()

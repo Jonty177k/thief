@@ -72,6 +72,7 @@ func _ready() -> void:
 	floor_max_angle = deg_to_rad(48.0)
 	_build_body()
 	_set_active(not stats.night_only or Game.is_night())
+	Game.noise_made.connect(_on_noise)
 
 
 func _build_body() -> void:
@@ -272,6 +273,18 @@ func _sense(delta: float) -> void:
 		awareness = maxf(awareness, 0.5) + delta * 0.4
 
 	awareness = clampf(awareness, 0.0, 1.0)
+
+
+## A sound somewhere (an arrow clattering, a hookshot firing): go and look.
+func _on_noise(e: NoiseEvent) -> void:
+	if not is_alive() or state == State.CHASE:
+		return
+	if global_position.distance_to(e.position) > e.radius * stats.hearing:
+		return
+	last_known = e.position
+	awareness = maxf(awareness, 0.35 + 0.4 * e.alarm)
+	if state == State.PATROL:
+		state = State.SUSPICIOUS
 
 
 func _line_of_sight(target: Vector3) -> bool:

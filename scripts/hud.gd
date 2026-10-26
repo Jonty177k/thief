@@ -3,10 +3,13 @@ extends CanvasLayer
 ## Everything is built in code so the scene file stays tiny.
 
 var health_bar: ProgressBar
+var stamina_bar: ProgressBar
 var gem: Panel
 var gem_style: StyleBoxFlat
 var clock: Label
 var crosshair: Label
+## Bottom right: the weapon in hand, the arrow or tool mode.
+var weapon: Label
 var prompt: Label
 var message: Label
 var rest_menu: PanelContainer
@@ -27,6 +30,8 @@ func _ready() -> void:
 
 	health_bar = _bar(Color(0.65, 0.12, 0.1), Vector2(8, 8), Vector2(120, 6))
 	root.add_child(health_bar)
+	stamina_bar = _bar(Color(0.25, 0.55, 0.22), Vector2(8, 16), Vector2(100, 4))
+	root.add_child(stamina_bar)
 
 	# The light gem, Thief-style: bright means seen.
 	gem_style = StyleBoxFlat.new()
@@ -54,6 +59,19 @@ func _ready() -> void:
 	clock.offset_right = -8
 	clock.offset_top = 6
 	root.add_child(clock)
+
+	weapon = _label(10, HORIZONTAL_ALIGNMENT_RIGHT)
+	weapon.anchor_left = 1.0
+	weapon.anchor_right = 1.0
+	weapon.anchor_top = 1.0
+	weapon.anchor_bottom = 1.0
+	weapon.offset_left = -220
+	weapon.offset_right = -8
+	weapon.offset_top = -34
+	weapon.offset_bottom = -8
+	weapon.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
+	weapon.modulate = Color(1, 1, 1, 0.85)
+	root.add_child(weapon)
 
 	crosshair = _label(12, HORIZONTAL_ALIGNMENT_CENTER)
 	crosshair.text = "+"
@@ -84,7 +102,7 @@ func _ready() -> void:
 	root.add_child(message)
 
 	help = _label(9, HORIZONTAL_ALIGNMENT_LEFT)
-	help.position = Vector2(8, 20)
+	help.position = Vector2(8, 24)
 	help.modulate = Color(1, 1, 1, 0.8)
 	_update_help()
 	root.add_child(help)
@@ -159,6 +177,17 @@ func set_health(hp: float, max_hp: float) -> void:
 	health_bar.value = hp
 
 
+func set_stamina(value: float, max_value: float) -> void:
+	stamina_bar.max_value = max_value
+	stamina_bar.value = value
+
+
+## The weapon readout, e.g. "Bow\nFire arrow  x6". Colour tints the second line.
+func set_weapon(text: String, color := Color(0.95, 0.88, 0.7)) -> void:
+	weapon.text = text
+	weapon.add_theme_color_override("font_color", color)
+
+
 func set_grapple_enabled(on: bool) -> void:
 	grapple_enabled = on
 	_update_help()
@@ -169,9 +198,11 @@ func set_grapple_enabled(on: bool) -> void:
 func _update_help() -> void:
 	help.text = "WASD move   Shift run   Ctrl crouch   Space jump   Alt dash\n" \
 		+ "LMB light attack   F heavy attack   RMB shield   E use\n" \
+		+ "1 sword   2 bow (hold LMB/F, Q arrows)   3 hookshot\n" \
 		+ ("G grapple (wood only)   " if grapple_enabled else "") + "F3 debug   Esc free mouse   H hide this\n" \
 		+ "Pad: L-stick move  R-stick look  L2 run  L1 shield  R1/R2 attack\n" \
-		+ "     Cross jump  Circle dash  Square use  Triangle crouch"
+		+ "     Cross jump  Circle dash  Square use  Triangle crouch\n" \
+		+ "     D-pad left sword  right bow  down hookshot  up arrow type"
 
 
 func set_visibility(v: float) -> void:
@@ -180,6 +211,12 @@ func set_visibility(v: float) -> void:
 
 func set_clock(text: String) -> void:
 	clock.text = text
+
+
+## The hookshot's crosshair: 0 nothing in reach, 1 it'll bite, 2 it won't.
+func set_tool_aim(aim: int) -> void:
+	crosshair.text = ["+", "o", "x"][aim]
+	crosshair.modulate = [Color(1, 1, 1, 0.6), Color(0.95, 0.75, 0.35), Color(0.85, 0.3, 0.25, 0.9)][aim]
 
 
 func set_grapple_aim(valid: bool) -> void:

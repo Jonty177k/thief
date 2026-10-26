@@ -22,6 +22,18 @@ with nearest-neighbour filtering.
 
 ![The controller test area](docs/screenshots/controller_01_yard.png)
 
+**Combat arena:** open `scenes/play_combat_arena.tscn` and press **F6** to
+fight a swordsman with sword, shield, stamina and dodge. See
+[docs/COMBAT.md](docs/COMBAT.md) for how it works and how to tune it.
+
+**Archery range:** open `scenes/play_archery_range.tscn` and press **F6**
+for the bow, with fire and water arrows, torches to light and douse,
+things to burn and a switch to shoot. See [docs/BOW.md](docs/BOW.md).
+
+**Tower yard:** open `scenes/play_tower_yard.tscn` and press **F6** for the
+hookshot and wire gun: haul yourself up towers, string a wire across the
+gap and walk it. See [docs/HOOKSHOT.md](docs/HOOKSHOT.md).
+
 ## Controls
 
 Jeffrey's controller follows the first-person controller spec. Everything
@@ -39,6 +51,12 @@ about it, including every tuning value, is in [docs/CONTROLLER.md](docs/CONTROLL
 | Dash | Circle | Alt |
 | Interact (doors, levers, pickups, rest at a campfire) | Square | E |
 | Crouch (toggle) | Triangle | Ctrl or C |
+| Sword and shield / bow / hookshot | D-pad left / right / down | 1 / 2 / 3 |
+| Bow: draw (hold) and fire (release) | R2 | Hold LMB or F |
+| Bow: cycle plain, fire, water arrows | D-pad up | Q or mouse wheel |
+| Hookshot: fire / set an anchor | R2 | Left mouse or F |
+| Hookshot: hook or wire mode | L1 | Right mouse |
+| On a wire: walk / jump off / step or drop off | Left stick / Cross / Circle | W S / Space / Alt |
 | Rest menu: morning / evening | D-pad up / down | 1 / 2 |
 | Grappling hook (greybox slice only; bites **brown wood**) | R3 | G or middle mouse |
 | Debug readout | Options | F3 |

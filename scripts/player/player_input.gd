@@ -19,6 +19,13 @@ var jump_pressed := false
 var dash_pressed := false
 var light_pressed := false
 var heavy_pressed := false
+var heavy_held := false
+var light_held := false
+var block_pressed := false
+var equip_sword_pressed := false
+var equip_bow_pressed := false
+var equip_tool_pressed := false
+var cycle_arrow_pressed := false
 var interact_pressed := false
 var crouch_pressed := false
 ## True when the last thing touched was a controller (for button prompts).
@@ -40,6 +47,13 @@ func poll() -> void:
 	dash_pressed = Input.is_action_just_pressed("dash")
 	light_pressed = Input.is_action_just_pressed("attack_light")
 	heavy_pressed = Input.is_action_just_pressed("attack_heavy")
+	heavy_held = Input.is_action_pressed("attack_heavy")
+	light_held = Input.is_action_pressed("attack_light")
+	block_pressed = Input.is_action_just_pressed("block")
+	equip_sword_pressed = Input.is_action_just_pressed("equip_sword")
+	equip_bow_pressed = Input.is_action_just_pressed("equip_bow")
+	equip_tool_pressed = Input.is_action_just_pressed("equip_tool")
+	cycle_arrow_pressed = Input.is_action_just_pressed("cycle_arrow")
 	interact_pressed = Input.is_action_just_pressed("interact")
 	crouch_pressed = Input.is_action_just_pressed("crouch")
 
@@ -54,6 +68,13 @@ func clear() -> void:
 	dash_pressed = false
 	light_pressed = false
 	heavy_pressed = false
+	heavy_held = false
+	light_held = false
+	block_pressed = false
+	equip_sword_pressed = false
+	equip_bow_pressed = false
+	equip_tool_pressed = false
+	cycle_arrow_pressed = false
 	interact_pressed = false
 	crouch_pressed = false
 

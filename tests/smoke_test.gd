@@ -187,6 +187,7 @@ func _run() -> void:
 	await wait(0.5)
 	p.heal_full()
 	p.shield.raised = true
+	p.shield.raise_progress = 1.0
 	p.rotation.y = 0.0
 	p.take_hit(40.0, p.global_position + Vector3(0, 0, -2))
 	check("shield blocks most damage", p.hp > 90.0, "hp %.0f" % p.hp)
