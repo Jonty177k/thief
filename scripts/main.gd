@@ -49,6 +49,11 @@ func _ready() -> void:
 	hud = Hud.new()
 	add_child(hud)
 	hud.set_grapple_enabled(grapple != null)
+	var gamepad := Gamepad.new()
+	gamepad.name = "Gamepad"
+	gamepad.connected.connect(func(_d: int, n: String) -> void: hud.show_message("Controller connected: " + n, 2.5))
+	gamepad.disconnected.connect(func(_d: int) -> void: hud.show_message("Controller disconnected", 2.5))
+	add_child(gamepad)
 	debug = DebugOverlay.new()
 	debug.player = player
 	debug.visible = _level_setting("show_debug_overlay", false)
@@ -69,6 +74,16 @@ func _ready() -> void:
 	hud.show_message(_level_setting("intro_text", "Follow the tree."), 3.0)
 
 
+## The game starts fullscreen (Project Settings > Display > Window > Mode).
+## F11 switches to a window and back.
+func _toggle_fullscreen() -> void:
+	var w := get_window()
+	if w.mode == Window.MODE_FULLSCREEN or w.mode == Window.MODE_EXCLUSIVE_FULLSCREEN:
+		w.mode = Window.MODE_WINDOWED
+	else:
+		w.mode = Window.MODE_FULLSCREEN
+
+
 ## A setting from the level root (JBDLevel), or `default` for the greybox.
 func _level_setting(key: String, default: Variant) -> Variant:
 	var v = world.get(key) if world else null
@@ -81,6 +96,8 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event is InputEventMouseButton and event.pressed and Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("toggle_fullscreen"):
+		_toggle_fullscreen()
 	elif event.is_action_pressed("toggle_help"):
 		hud.toggle_help()
 	elif event.is_action_pressed("toggle_debug"):

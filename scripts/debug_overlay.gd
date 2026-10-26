@@ -64,5 +64,6 @@ func text() -> String:
 		"use       %s" % target,
 		"hp        %.0f / %.0f" % [p.hp, p.max_hp],
 		"input     %s   fps %d" % ["gamepad" if p.input.using_gamepad else "keyboard/mouse", Engine.get_frames_per_second()],
+		"pad       %s" % Gamepad.describe(),
 	]
 	return "\n".join(lines)

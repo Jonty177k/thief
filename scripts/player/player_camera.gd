@@ -31,12 +31,20 @@ extends Node3D
 			camera.fov = v
 
 @export_group("Feel")
-## Off by default: the camera should feel stable and grounded.
-@export var head_bob_enabled := false
+## A subtle bob while walking. Keep it small: the camera should feel
+## stable and grounded.
+@export var head_bob_enabled := true
 ## Metres travelled per full bob cycle (two footsteps).
 @export var bob_stride := 2.2
-@export var bob_height := 0.03
-@export var bob_sway := 0.015
+## Up-and-down movement at walking speed, in metres.
+@export var bob_height := 0.025
+## Side-to-side movement at walking speed, in metres.
+@export var bob_sway := 0.012
+## Extra bob while running (1 = same as walking).
+@export var run_bob_multiplier := 1.3
+## Crouch-walking bobs a little more, with shorter, heavier steps.
+@export var crouch_bob_multiplier := 1.6
+@export var crouch_bob_stride := 1.4
 ## Slight roll into the dash direction. Off by default.
 @export var dash_lean_enabled := false
 @export var dash_lean_degrees := 3.0
@@ -52,7 +60,7 @@ var player: CharacterBody3D
 var camera: Camera3D
 
 var _stick := Vector2.ZERO
-var _bob_distance := 0.0
+var _bob_phase := 0.0
 var _bob_weight := 0.0
 var _land_dip := 0.0
 var _step_offset := 0.0
@@ -133,13 +141,22 @@ func _update_feel(delta: float) -> void:
 	_land_dip = move_toward(_land_dip, 0.0, delta * 1.0)
 
 	var ground_speed := Vector2(player.velocity.x, player.velocity.z).length()
+	var crouched: bool = player.movement.crouching
+	var stride := crouch_bob_stride if crouched else bob_stride
 	var bob_target := 0.0
 	if head_bob_enabled and player.is_on_floor() and ground_speed > 0.3 and not player.dash.active:
-		bob_target = clampf(ground_speed / player.movement.walk_speed, 0.0, 1.5)
+		# Full bob at the gait's own speed, so a slow crouch-walk still bobs.
+		var gait_speed: float = player.movement.crouch_speed if crouched else player.movement.walk_speed
+		bob_target = clampf(ground_speed / gait_speed, 0.0, 1.0)
+		if crouched:
+			bob_target *= crouch_bob_multiplier
+		elif player.movement.running:
+			bob_target *= lerpf(1.0, run_bob_multiplier, clampf((ground_speed - player.movement.walk_speed) / (player.movement.run_speed - player.movement.walk_speed), 0.0, 1.0))
 	_bob_weight = lerpf(_bob_weight, bob_target, 1.0 - exp(-8.0 * delta))
-	_bob_distance += ground_speed * delta
-	var phase := _bob_distance / bob_stride * TAU
-	var bob := Vector2(sin(phase) * bob_sway, -absf(sin(phase)) * bob_height) * _bob_weight
+	# Advance the phase rather than store distance, so changing stride
+	# (crouching mid-step) doesn't jump the camera.
+	_bob_phase = fmod(_bob_phase + ground_speed * delta / stride * TAU, TAU * 1000.0)
+	var bob := Vector2(sin(_bob_phase) * bob_sway, -absf(sin(_bob_phase)) * bob_height) * _bob_weight
 
 	var lean_target := 0.0
 	if dash_lean_enabled and player.dash.active:

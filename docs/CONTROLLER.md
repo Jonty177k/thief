@@ -49,13 +49,30 @@ picking a device number.
 | Crouch (toggle) | Triangle | Ctrl (or C) |
 | Rest menu: morning / evening / get up | D-pad up / D-pad down / Circle | 1 / 2 / E |
 | Debug readout | Options | F3 |
+| Fullscreen / window | | F11 |
+| Climb a ladder | walk into it, or Square | walk into it, or E |
 | Controls overlay | Create | H |
 | Grappling hook (greybox slice only) | R3 | G or middle mouse |
 
-Godot sees a DualSense with SDL's standard layout: Cross is "A", Circle "B",
-Square "X", Triangle "Y", and L2/R2 are trigger axes. Check these on your OS
-with a real controller: they have only been checked headless (see *What the
-tests can't check*).
+The game starts fullscreen. F11 switches to a window and back; the window
+size is in *Project Settings → Display → Window*.
+
+### PS5 controller
+
+Plug it in by USB or pair it over Bluetooth, before or during play; a
+message says when it connects. Godot reads a DualSense through its built-in
+SDL controller database, which uses Xbox names: Cross is "A", Circle "B",
+Square "X", Triangle "Y", and L2/R2 are analog trigger axes. The Input Map
+is bound to those, so it works the same on Windows, macOS and Linux.
+
+If Godot ever doesn't recognise a Sony controller (a new model ID or a
+clone), `scripts/gamepad.gd` adds the DualSense's raw button layout for it,
+so Cross still jumps and L2 still runs. The debug readout's last line (F3 or
+Options) names the controller and says *mapped* when Godot knows its layout.
+
+If Steam is running with Steam Input on for PlayStation controllers, it
+presents the pad as an Xbox controller; that works too, with the same
+buttons. Tools like DS4Windows do the same.
 
 ## How it's built
 
@@ -173,8 +190,10 @@ there is room. Air control is reduced but never bleeds off a running jump.
 | | Stick Smoothing | 14 |
 | Limits | Pitch Min / Max | -85° / 85° |
 | | FOV | 75° |
-| Feel | Head Bob Enabled | **off** |
-| | Bob Stride / Height / Sway | 2.2 m / 0.03 m / 0.015 m |
+| Feel | Head Bob Enabled | on |
+| | Bob Stride / Height / Sway | 2.2 m / 0.025 m / 0.012 m (walking) |
+| | Run Bob Multiplier | 1.3 |
+| | Crouch Bob Multiplier / Crouch Bob Stride | 1.6 / 1.4 m (shorter, heavier steps) |
 | | Dash Lean Enabled | **off** |
 | | Dash Lean Degrees | 3° |
 | | Landing Dip Enabled | on |
@@ -251,7 +270,7 @@ level (*Show Debug Overlay* on the level root).
 godot --headless --path . res://tests/controller_test.tscn
 ```
 
-64 checks in the test level, driving Jeffrey through the real Input Map
+77 checks in the test level, driving Jeffrey through the real Input Map
 actions. They cover the acceptance tests in the spec:
 
 - Acceleration and deceleration; Run only while held; half stick walks
@@ -322,6 +341,9 @@ Where the spec and the GDD disagree, this follows the spec:
   on a short downward ray (a SeparationRayShape3D) so stairs and kerbs are
   walked up smoothly. Walking off a ledge drops you cleanly; steep slopes
   are read from the ground ray and slide you off.
-- **Ladders** add a *Climbing* state the spec doesn't list.
+- **Ladders** add a *Climbing* state the spec doesn't list. Walk into a
+  ladder (or press Interact next to it) to grab it; push forward to climb,
+  back to go down (or look down and push forward), and you step off onto the
+  ledge at the top. Jump lets go.
 - Backstabs (×4 on an unaware enemy from behind) stay, but on the enemy's
   side of the damage interface.

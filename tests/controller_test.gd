@@ -428,6 +428,18 @@ func _run() -> void:
 	await wait(0.4)
 	check("climbs back down from the top", went_down and p.is_on_floor() and p.global_position.y < 0.1 and p.hp == p.max_hp, str(p.global_position))
 
+	# Interact also grabs a ladder, with a prompt.
+	await place(Vector3(30, 0, -1.9), 0.0)
+	await frames(2)
+	check("standing at a ladder prompts Climb", main.hud.prompt.text.ends_with("Climb"), main.hud.prompt.text)
+	await tap("interact")
+	check("Interact grabs the ladder", p.state == JBDPlayer.State.CLIMBING)
+	await frames(2)
+	check("on the ladder the prompt says Let go", main.hud.prompt.text.ends_with("Let go"), main.hud.prompt.text)
+	await tap("jump")
+	check("Jump lets go of the ladder", mv.ladder == null)
+	await wait(0.5)
+
 	var cliff_ladder: JBDLadder = main.world.get_node("Mountains/CliffLadder")
 	await place(Vector3(0, 0, cliff_ladder.global_position.z + 1.6), 0.0)
 	Input.action_press("move_forward")
@@ -458,6 +470,46 @@ func _run() -> void:
 	Input.action_release("move_forward")
 	check("stairs and stone bridge cross to the far platform", p.global_position.y > 2.9 and p.global_position.z < -54.0, str(p.global_position))
 
+	# --- Head bob, fullscreen, controller mapping -----------------------------
+	var walk_bob: float = await _bob_amplitude(false)
+	var crouch_bob: float = await _bob_amplitude(true)
+	check("walking bobs the head subtly", walk_bob > 0.01 and walk_bob < 0.05, "%.3f m" % walk_bob)
+	check("crouch-walking bobs a bit more", crouch_bob > walk_bob * 1.2 and crouch_bob < 0.08, "%.3f m" % crouch_bob)
+	check("the game starts fullscreen", ProjectSettings.get_setting("display/window/size/mode") == DisplayServer.WINDOW_MODE_FULLSCREEN)
+	check("F11 toggles fullscreen", InputMap.action_has_event("toggle_fullscreen", _key(KEY_F11)))
+	p.input.enabled = false
+	var pad := {
+		"jump": JOY_BUTTON_A, "dash": JOY_BUTTON_B, "interact": JOY_BUTTON_X, "crouch": JOY_BUTTON_Y,
+		"block": JOY_BUTTON_LEFT_SHOULDER, "attack_light": JOY_BUTTON_RIGHT_SHOULDER,
+	}
+	var pad_ok := true
+	for action in pad:
+		_pad_button(pad[action], true)
+		if not Input.is_action_pressed(action):
+			pad_ok = false
+			print("  %s not on its PS5 button" % action)
+		_pad_button(pad[action], false)
+	check("Cross/Circle/Square/Triangle/L1/R1 map to jump/dash/interact/crouch/block/light", pad_ok)
+	_pad_axis(JOY_AXIS_TRIGGER_LEFT, 1.0)
+	_pad_axis(JOY_AXIS_TRIGGER_RIGHT, 1.0)
+	var triggers_ok := Input.is_action_pressed("run") and Input.is_action_pressed("attack_heavy")
+	_pad_axis(JOY_AXIS_TRIGGER_LEFT, 0.0)
+	_pad_axis(JOY_AXIS_TRIGGER_RIGHT, 0.0)
+	triggers_ok = triggers_ok and not Input.is_action_pressed("run") and not Input.is_action_pressed("attack_heavy")
+	check("L2 runs and R2 heavy-attacks as analog triggers", triggers_ok)
+	_pad_axis(JOY_AXIS_LEFT_Y, -0.5)
+	_pad_axis(JOY_AXIS_RIGHT_X, 0.8)
+	var half_stick := Input.get_action_strength("move_forward")
+	var sticks_ok := half_stick > 0.3 and half_stick < 0.6 and Input.get_action_strength("look_right") > 0.7
+	_pad_axis(JOY_AXIS_LEFT_Y, 0.0)
+	_pad_axis(JOY_AXIS_RIGHT_X, 0.0)
+	check("left stick moves (analog), right stick looks", sticks_ok)
+	p.input.enabled = true
+	check("a Sony pad is recognised by name", Gamepad.is_sony_name("PS5 Controller") and Gamepad.is_sony_name("DualSense Wireless Controller") and not Gamepad.is_sony_name("Xbox Series Controller"))
+	var line := Gamepad.sony_mapping("030000004c050000e60c000000000000", "DualSense Wireless Controller")
+	check("the DualSense fallback layout puts Cross on A and L2 on the left trigger",
+		line.begins_with("030000004c050000e60c000000000000,DualSense Wireless Controller,") and line.contains("a:b1,") and line.contains("lefttrigger:a3"), line)
+
 	# --- Death ------------------------------------------------------------------
 	var died := [false]
 	p.died.connect(func() -> void: died[0] = true)
@@ -467,3 +519,48 @@ func _run() -> void:
 	check("dead state; input is off", died[0] and p.state == JBDPlayer.State.DEAD and not p.input.enabled)
 	await wait(5.5)
 	check("respawns at the checkpoint", not p.dead and p.hp == p.max_hp and p.state != JBDPlayer.State.DEAD)
+
+
+## Peak-to-peak head bob over a second of walking (or crouch-walking).
+func _bob_amplitude(crouched: bool) -> float:
+	await place(Vector3(0, 0, 12), 180.0)
+	if crouched:
+		await tap("crouch")
+		await wait(0.5)
+	Input.action_press("move_forward")
+	await wait(0.6)
+	var lo := 1.0
+	var hi := -1.0
+	for i in 60:
+		await frames(1)
+		lo = minf(lo, p.camera.position.y)
+		hi = maxf(hi, p.camera.position.y)
+	Input.action_release("move_forward")
+	if crouched:
+		await tap("crouch")
+		await wait(0.5)
+	return hi - lo
+
+
+func _key(k: Key) -> InputEventKey:
+	var ev := InputEventKey.new()
+	ev.physical_keycode = k
+	return ev
+
+
+func _pad_button(b: JoyButton, pressed: bool) -> void:
+	var ev := InputEventJoypadButton.new()
+	ev.device = 0
+	ev.button_index = b
+	ev.pressed = pressed
+	Input.parse_input_event(ev)
+	Input.flush_buffered_events()
+
+
+func _pad_axis(a: JoyAxis, value: float) -> void:
+	var ev := InputEventJoypadMotion.new()
+	ev.device = 0
+	ev.axis = a
+	ev.axis_value = value
+	Input.parse_input_event(ev)
+	Input.flush_buffered_events()

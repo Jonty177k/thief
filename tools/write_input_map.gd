@@ -29,6 +29,7 @@ const ACTIONS := {
 	"rest_evening": [0.5, [KEY_2], [], [JOY_BUTTON_DPAD_DOWN], []],
 	"toggle_help": [0.5, [KEY_H], [], [JOY_BUTTON_BACK], []],
 	"toggle_debug": [0.5, [KEY_F3], [], [JOY_BUTTON_START], []],
+	"toggle_fullscreen": [0.5, [KEY_F11], [], [], []],
 	"free_mouse": [0.5, [KEY_ESCAPE], [], [], []],
 	"debug_time": [0.5, [KEY_T], [], [], []],
 }
