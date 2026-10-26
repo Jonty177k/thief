@@ -47,6 +47,8 @@ picking a device number.
 | Dash | Circle | Alt |
 | Interact / open / pick up | Square | E |
 | Crouch (toggle) | Triangle | Ctrl (or C) |
+| Sword and shield / bow / hookshot | D-pad left / right / down | 1 / 2 / 3 |
+| Bow: cycle arrow type | D-pad up | Q or mouse wheel |
 | Rest menu: morning / evening / get up | D-pad up / D-pad down / Circle | 1 / 2 / E |
 | Debug readout | Options | F3 |
 | Fullscreen / window | | F11 |

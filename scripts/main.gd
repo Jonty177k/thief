@@ -124,6 +124,7 @@ func _process(delta: float) -> void:
 	hud.set_visibility(player.visibility)
 	hud.set_grapple_aim(grapple != null and grapple.aim_valid)
 	hud.set_clock(Game.clock_text())
+	_update_weapon_hud()
 
 	if not _level_setting("colossus_tremors", true):
 		return
@@ -134,6 +135,21 @@ func _process(delta: float) -> void:
 		if first_tremor:
 			first_tremor = false
 			hud.show_message("The Colossus takes a step.", 2.0)
+
+
+func _update_weapon_hud() -> void:
+	var lo := player.loadout
+	var slot := lo.pending if lo.switching() else lo.current
+	var text := lo.slot_name(slot)
+	var color := Color(0.95, 0.88, 0.7)
+	if slot == PlayerLoadout.Slot.BOW:
+		var t := player.bow.current_type()
+		var n := player.bow.count_for(t)
+		text += "\n%s  %s" % [t.name, "(unlimited)" if n < 0 else "x%d" % n]
+		color = t.color.lerp(Color.WHITE, 0.35)
+	elif slot == PlayerLoadout.Slot.TOOL and player.tool:
+		text += "\n" + player.tool.mode_name()
+	hud.set_weapon(text, color)
 
 
 func _on_fire_entered(fire: Node3D) -> void:

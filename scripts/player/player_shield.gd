@@ -82,7 +82,7 @@ func covers(direction: Vector3) -> bool:
 ## way and pays the stamina. Returns "blocked", "guard_break" or "" (not
 ## blocked).
 func try_block(info: DamageInfo) -> String:
-	if info.kind == "fall" or not covers(info.direction):
+	if info.kind in ["fall", "fire"] or not covers(info.direction):
 		return ""
 	info.blocked = true
 	var st: PlayerStamina = player.stamina

@@ -8,6 +8,8 @@ var gem: Panel
 var gem_style: StyleBoxFlat
 var clock: Label
 var crosshair: Label
+## Bottom right: the weapon in hand, the arrow or tool mode.
+var weapon: Label
 var prompt: Label
 var message: Label
 var rest_menu: PanelContainer
@@ -57,6 +59,19 @@ func _ready() -> void:
 	clock.offset_right = -8
 	clock.offset_top = 6
 	root.add_child(clock)
+
+	weapon = _label(10, HORIZONTAL_ALIGNMENT_RIGHT)
+	weapon.anchor_left = 1.0
+	weapon.anchor_right = 1.0
+	weapon.anchor_top = 1.0
+	weapon.anchor_bottom = 1.0
+	weapon.offset_left = -220
+	weapon.offset_right = -8
+	weapon.offset_top = -34
+	weapon.offset_bottom = -8
+	weapon.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
+	weapon.modulate = Color(1, 1, 1, 0.85)
+	root.add_child(weapon)
 
 	crosshair = _label(12, HORIZONTAL_ALIGNMENT_CENTER)
 	crosshair.text = "+"
@@ -167,6 +182,12 @@ func set_stamina(value: float, max_value: float) -> void:
 	stamina_bar.value = value
 
 
+## The weapon readout, e.g. "Bow\nFire arrow  x6". Colour tints the second line.
+func set_weapon(text: String, color := Color(0.95, 0.88, 0.7)) -> void:
+	weapon.text = text
+	weapon.add_theme_color_override("font_color", color)
+
+
 func set_grapple_enabled(on: bool) -> void:
 	grapple_enabled = on
 	_update_help()
@@ -177,9 +198,11 @@ func set_grapple_enabled(on: bool) -> void:
 func _update_help() -> void:
 	help.text = "WASD move   Shift run   Ctrl crouch   Space jump   Alt dash\n" \
 		+ "LMB light attack   F heavy attack   RMB shield   E use\n" \
+		+ "1 sword   2 bow (hold LMB/F, Q arrows)   3 hookshot\n" \
 		+ ("G grapple (wood only)   " if grapple_enabled else "") + "F3 debug   Esc free mouse   H hide this\n" \
 		+ "Pad: L-stick move  R-stick look  L2 run  L1 shield  R1/R2 attack\n" \
-		+ "     Cross jump  Circle dash  Square use  Triangle crouch"
+		+ "     Cross jump  Circle dash  Square use  Triangle crouch\n" \
+		+ "     D-pad left sword  right bow  down hookshot  up arrow type"
 
 
 func set_visibility(v: float) -> void:

@@ -3,10 +3,16 @@ class_name JBDTorch
 extends Node3D
 ## A flickering torch. Mount it on a wall (bracket sticks out along -Z)
 ## or stand it on the ground. Tweak colour, range and flicker live in the
-## Inspector. Torches join the "light_source" group with a `light_radius`
-## so stealth code can count them as light.
+## Inspector. Its flame is a FlameComponent: a fire arrow lights it, a
+## water arrow puts it out (and its light really goes off), and while lit
+## it counts as light for Jeffrey's light gem. A small hit box round the
+## flame (physics layer 5, "elemental") lets arrows find it.
+
+signal lit_changed(lit: bool)
 
 enum Style { WALL, STANDING, NONE }
+
+const ELEMENTAL_LAYER := 16
 
 @export var style := Style.WALL:
 	set(v):
@@ -15,7 +21,8 @@ enum Style { WALL, STANDING, NONE }
 @export var lit := true:
 	set(v):
 		lit = v
-		_queue_rebuild()
+		if _flame and _flame.lit != v:
+			_flame.lit = v
 @export var color := Color(1.0, 0.62, 0.3):
 	set(v):
 		color = v
@@ -33,22 +40,32 @@ enum Style { WALL, STANDING, NONE }
 		shadows = v
 		_queue_rebuild()
 ## 0 = steady, 1 = wild.
-@export_range(0.0, 1.0) var flicker := 0.35
+@export_range(0.0, 1.0) var flicker := 0.35:
+	set(v):
+		flicker = v
+		if _flame:
+			_flame.flicker = v
+## Fire arrows can light it.
+@export var can_ignite := true:
+	set(v):
+		can_ignite = v
+		_queue_rebuild()
+## Water arrows can put it out.
+@export var can_extinguish := true:
+	set(v):
+		can_extinguish = v
+		_queue_rebuild()
 
 var light_radius: float:
 	get:
 		return light_range if lit else 0.0
 
-var _light: OmniLight3D
-var _flame: MeshInstance3D
+var _flame: FlameComponent
 var _parts: Array[Node] = []
 var _pending := false
-var _t := 0.0
 
 
 func _ready() -> void:
-	add_to_group("light_source")
-	_t = randf() * 10.0
 	_rebuild()
 
 
@@ -72,32 +89,46 @@ func _rebuild() -> void:
 			_part(BoxMesh, Vector3(0.12, 0.3, 0.06), Vector3(0, 0, 0), iron)
 			var stick := _part(BoxMesh, Vector3(0.08, 0.5, 0.08), Vector3(0, 0.15, -0.18), wood)
 			stick.rotation.x = -0.45
-			flame_pos = Vector3(0, 0.45, -0.3)
+			flame_pos = Vector3(0, 0.38, -0.29)
 		Style.STANDING:
 			_part(BoxMesh, Vector3(0.12, 1.6, 0.12), Vector3(0, 0.8, 0), wood)
 			_part(BoxMesh, Vector3(0.28, 0.12, 0.28), Vector3(0, 1.6, 0), iron)
-			flame_pos = Vector3(0, 1.8, 0)
+			flame_pos = Vector3(0, 1.66, 0)
 		Style.NONE:
 			pass
-	if lit:
-		var fmat := StandardMaterial3D.new()
-		fmat.albedo_color = color
-		fmat.emission_enabled = true
-		fmat.emission = color
-		fmat.emission_energy_multiplier = 4.0
-		fmat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-		_flame = _part(PrismMesh, Vector3(0.2, 0.35, 0.2), flame_pos, fmat)
-		_light = OmniLight3D.new()
-		_light.light_color = color
-		_light.light_energy = energy
-		_light.omni_range = light_range
-		_light.shadow_enabled = shadows
-		_light.position = flame_pos + Vector3(0, 0.2, 0)
-		add_child(_light, false, INTERNAL_MODE_BACK)
-		_parts.append(_light)
-	else:
-		_flame = null
-		_light = null
+	# A charred head that shows when the torch is out.
+	var soot := StandardMaterial3D.new()
+	soot.albedo_color = Color(0.08, 0.07, 0.06)
+	_part(BoxMesh, Vector3(0.12, 0.12, 0.12), flame_pos, soot)
+
+	_flame = FlameComponent.new()
+	_flame.color = color
+	_flame.energy = energy
+	_flame.light_range = light_range
+	_flame.shadows = shadows
+	_flame.flicker = flicker
+	_flame.can_ignite = can_ignite
+	_flame.can_extinguish = can_extinguish
+	_flame.lit = lit
+	_flame.position = flame_pos + Vector3(0, 0.05, 0)
+	add_child(_flame, false, INTERNAL_MODE_BACK)
+	_parts.append(_flame)
+	_flame.lit_changed.connect(func(on: bool) -> void:
+		lit = on
+		lit_changed.emit(on))
+
+	# Arrows find the torch through this.
+	var body := StaticBody3D.new()
+	body.collision_layer = ELEMENTAL_LAYER
+	body.collision_mask = 0
+	var shape := CollisionShape3D.new()
+	var box := BoxShape3D.new()
+	box.size = Vector3(0.45, 0.6, 0.45)
+	shape.shape = box
+	body.add_child(shape)
+	body.position = flame_pos + Vector3(0, 0.1, 0)
+	add_child(body, false, INTERNAL_MODE_BACK)
+	_parts.append(body)
 
 
 func _part(kind, part_size: Vector3, pos: Vector3, mat: Material) -> MeshInstance3D:
@@ -112,10 +143,11 @@ func _part(kind, part_size: Vector3, pos: Vector3, mat: Material) -> MeshInstanc
 	return mi
 
 
-func _process(delta: float) -> void:
-	if _light == null:
-		return
-	_t += delta
-	var f := (sin(_t * 11.0) * 0.6 + sin(_t * 23.0 + 1.3) * 0.4) * flicker
-	_light.light_energy = energy * (1.0 + f * 0.6)
-	_flame.scale = Vector3(1.0, 1.0 + f * 0.5, 1.0)
+## The torch's flame (for the elemental interface and tests).
+func flame() -> FlameComponent:
+	return _flame
+
+
+## The elemental interface: handed straight to the flame.
+func receive_element(effect: ElementalEffect) -> bool:
+	return _flame != null and _flame.receive_element(effect)

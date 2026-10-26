@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3]
+[gd_scene load_steps=16 format=3]
 
 [ext_resource type="Script" path="res://scripts/player/player.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/player/player_camera.gd" id="2"]
@@ -11,6 +11,8 @@
 [ext_resource type="Script" path="res://scripts/player/player_interaction.gd" id="9"]
 [ext_resource type="Script" path="res://scripts/player/player_stealth.gd" id="10"]
 [ext_resource type="Script" path="res://scripts/player/player_stamina.gd" id="11"]
+[ext_resource type="Script" path="res://scripts/player/player_loadout.gd" id="12"]
+[ext_resource type="Script" path="res://scripts/player/player_bow.gd" id="13"]
 
 [sub_resource type="CapsuleShape3D" id="Capsule"]
 resource_local_to_scene = true
@@ -71,6 +73,12 @@ script = ExtResource("8")
 
 [node name="Stamina" type="Node" parent="."]
 script = ExtResource("11")
+
+[node name="Loadout" type="Node" parent="."]
+script = ExtResource("12")
+
+[node name="Bow" type="Node" parent="."]
+script = ExtResource("13")
 
 [node name="Interaction" type="Node" parent="."]
 script = ExtResource("9")

@@ -30,6 +30,12 @@ const ACTIONS := {
 	"toggle_help": [0.5, [KEY_H], [], [JOY_BUTTON_BACK], []],
 	"toggle_debug": [0.5, [KEY_F3], [], [JOY_BUTTON_START], []],
 	"toggle_fullscreen": [0.5, [KEY_F11], [], [], []],
+	# Weapons. The D-pad's rest-menu actions only apply while that menu is
+	# open, when Jeffrey's own input is off, so the buttons can share.
+	"equip_sword": [0.5, [KEY_1], [], [JOY_BUTTON_DPAD_LEFT], []],
+	"equip_bow": [0.5, [KEY_2], [], [JOY_BUTTON_DPAD_RIGHT], []],
+	"equip_tool": [0.5, [KEY_3], [], [JOY_BUTTON_DPAD_DOWN], []],
+	"cycle_arrow": [0.5, [KEY_Q], [MOUSE_BUTTON_WHEEL_UP, MOUSE_BUTTON_WHEEL_DOWN], [JOY_BUTTON_DPAD_UP], []],
 	"free_mouse": [0.5, [KEY_ESCAPE], [], [], []],
 	"debug_time": [0.5, [KEY_T], [], [], []],
 }
