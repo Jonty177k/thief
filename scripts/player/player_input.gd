@@ -19,6 +19,8 @@ var jump_pressed := false
 var dash_pressed := false
 var light_pressed := false
 var heavy_pressed := false
+var heavy_held := false
+var light_held := false
 var interact_pressed := false
 var crouch_pressed := false
 ## True when the last thing touched was a controller (for button prompts).
@@ -40,6 +42,8 @@ func poll() -> void:
 	dash_pressed = Input.is_action_just_pressed("dash")
 	light_pressed = Input.is_action_just_pressed("attack_light")
 	heavy_pressed = Input.is_action_just_pressed("attack_heavy")
+	heavy_held = Input.is_action_pressed("attack_heavy")
+	light_held = Input.is_action_pressed("attack_light")
 	interact_pressed = Input.is_action_just_pressed("interact")
 	crouch_pressed = Input.is_action_just_pressed("crouch")
 
@@ -54,6 +58,8 @@ func clear() -> void:
 	dash_pressed = false
 	light_pressed = false
 	heavy_pressed = false
+	heavy_held = false
+	light_held = false
 	interact_pressed = false
 	crouch_pressed = false
 

@@ -34,6 +34,13 @@ static func scrape() -> AudioStreamWAV:
 		return (sin(TAU * 1800.0 * t) * 0.3 + randf_range(-0.5, 0.5)) * env * 0.6, 0.2)
 
 
+## A low growl: an enemy winding up a blow.
+static func grunt() -> AudioStreamWAV:
+	return _synth("grunt", func(t: float) -> float:
+		var env := sin(clampf(t / 0.3, 0.0, 1.0) * PI)
+		return (sin(TAU * (85.0 + 20.0 * t) * t) * 0.6 + sin(TAU * 170.0 * t) * 0.2 + randf_range(-0.25, 0.25)) * env * 0.7, 0.3)
+
+
 static func _synth(key: String, wave: Callable, length: float) -> AudioStreamWAV:
 	if _cache.has(key):
 		return _cache[key]

@@ -22,6 +22,10 @@ with nearest-neighbour filtering.
 
 ![The controller test area](docs/screenshots/controller_01_yard.png)
 
+**Combat arena:** open `scenes/play_combat_arena.tscn` and press **F6** to
+fight a swordsman with sword, shield, stamina and dodge. See
+[docs/COMBAT.md](docs/COMBAT.md) for how it works and how to tune it.
+
 ## Controls
 
 Jeffrey's controller follows the first-person controller spec. Everything

@@ -1,0 +1,235 @@
+[gd_scene load_steps=11 format=3]
+
+[ext_resource type="Script" path="res://addons/jbd_level_tools/objects/level.gd" id="1_cr5w7"]
+[ext_resource type="Script" path="res://addons/jbd_level_tools/objects/block.gd" id="2_u54iv"]
+[ext_resource type="Material" path="res://addons/jbd_level_tools/materials/grid.tres" id="3_b0o5q"]
+[ext_resource type="Material" path="res://addons/jbd_level_tools/materials/ruin.tres" id="4_kub00"]
+[ext_resource type="Material" path="res://addons/jbd_level_tools/materials/wood.tres" id="5_njjym"]
+[ext_resource type="Script" path="res://addons/jbd_level_tools/objects/player_start.gd" id="6_78sux"]
+[ext_resource type="Script" path="res://addons/jbd_level_tools/objects/campfire_spot.gd" id="7_m1cib"]
+[ext_resource type="Script" path="res://addons/jbd_level_tools/objects/training_dummy.gd" id="8_f4xds"]
+[ext_resource type="Script" path="res://scripts/combat/swordsman.gd" id="9_vs56o"]
+[ext_resource type="Script" path="res://scripts/combat/enemy_attack.gd" id="10_1le5s"]
+
+[node name="CombatArena" type="Node3D"]
+script = ExtResource("1_cr5w7")
+level_name = "Combat arena"
+start_hour = 12.0
+intro_text = "Combat arena. F3 hides the readout and hitboxes."
+allow_grapple = false
+show_debug_overlay = true
+colossus_tremors = false
+
+[node name="Building" type="Node3D" parent="."]
+
+[node name="Floor" type="StaticBody3D" parent="Building"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+script = ExtResource("2_u54iv")
+shape = 0
+size = Vector3(28, 1, 28)
+material = ExtResource("3_b0o5q")
+grapple_anchor = false
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 1
+roughness = 0.3
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Building"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -14.25)
+script = ExtResource("2_u54iv")
+shape = 0
+size = Vector3(29, 4, 0.5)
+material = ExtResource("4_kub00")
+grapple_anchor = false
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 1
+roughness = 0.3
+
+[node name="StaticBody3D2" type="StaticBody3D" parent="Building"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.25, 0, 0)
+script = ExtResource("2_u54iv")
+shape = 0
+size = Vector3(0.5, 4, 28)
+material = ExtResource("4_kub00")
+grapple_anchor = false
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 1
+roughness = 0.3
+
+[node name="StaticBody3D3" type="StaticBody3D" parent="Building"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 14.25)
+script = ExtResource("2_u54iv")
+shape = 0
+size = Vector3(29, 4, 0.5)
+material = ExtResource("4_kub00")
+grapple_anchor = false
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 1
+roughness = 0.3
+
+[node name="StaticBody3D4" type="StaticBody3D" parent="Building"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.25, 0, 0)
+script = ExtResource("2_u54iv")
+shape = 0
+size = Vector3(0.5, 4, 28)
+material = ExtResource("4_kub00")
+grapple_anchor = false
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 1
+roughness = 0.3
+
+[node name="SwingWall" type="StaticBody3D" parent="Building"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.5, 0, -2)
+script = ExtResource("2_u54iv")
+shape = 0
+size = Vector3(0.6, 3, 4)
+material = ExtResource("4_kub00")
+grapple_anchor = false
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 1
+roughness = 0.3
+
+[node name="PillarA" type="StaticBody3D" parent="Building"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, 3)
+script = ExtResource("2_u54iv")
+shape = 3
+size = Vector3(1.2, 4, 1.2)
+material = ExtResource("4_kub00")
+grapple_anchor = false
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 1
+roughness = 0.3
+
+[node name="PillarB" type="StaticBody3D" parent="Building"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, -6)
+script = ExtResource("2_u54iv")
+shape = 3
+size = Vector3(1.2, 4, 1.2)
+material = ExtResource("4_kub00")
+grapple_anchor = false
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 1
+roughness = 0.3
+
+[node name="LowCrates" type="StaticBody3D" parent="Building"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0, -6)
+script = ExtResource("2_u54iv")
+shape = 0
+size = Vector3(3, 1, 1.2)
+material = ExtResource("5_njjym")
+grapple_anchor = false
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 1
+roughness = 0.3
+
+[node name="CoverWall" type="StaticBody3D" parent="Building"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -11)
+script = ExtResource("2_u54iv")
+shape = 0
+size = Vector3(4, 2.5, 0.6)
+material = ExtResource("4_kub00")
+grapple_anchor = false
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 1
+roughness = 0.3
+
+[node name="PlayerStart" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 11)
+script = ExtResource("6_78sux")
+
+[node name="Gameplay" type="Node3D" parent="."]
+
+[node name="Campfire" type="Node3D" parent="Gameplay"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, 12)
+script = ExtResource("7_m1cib")
+fire_name = "Arena Fire"
+
+[node name="TrainingDummy" type="StaticBody3D" parent="Gameplay"]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -8, 0, 2)
+script = ExtResource("8_f4xds")
+max_health = 100.0
+respawn_time = 3.0
+
+[node name="Signs" type="Node3D" parent="."]
+
+[node name="Label3D" type="Label3D" parent="Signs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.2, 13.5)
+pixel_size = 0.008
+billboard = 2
+modulate = Color(1, 0.92, 0.7, 1)
+text = "COMBAT ARENA
+Rest at the fire to bring the swordsman back"
+font_size = 40
+outline_size = 10
+
+[node name="Label3D2" type="Label3D" parent="Signs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 3.2, 2)
+pixel_size = 0.008
+billboard = 2
+modulate = Color(1, 0.92, 0.7, 1)
+text = "Dummy: light combo, heavy
+Then swing into the wall"
+font_size = 40
+outline_size = 10
+
+[node name="Label3D3" type="Label3D" parent="Signs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 3.4, -8)
+pixel_size = 0.008
+billboard = 2
+modulate = Color(1, 0.92, 0.7, 1)
+text = "Swordsman: watch the windup,
+block or dodge, punish the recovery"
+font_size = 40
+outline_size = 10
+
+[node name="Enemies" type="Node3D" parent="."]
+
+[node name="Swordsman" type="CharacterBody3D" parent="Enemies"]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 1, 0, -4)
+script = ExtResource("9_vs56o")
+max_health = 100.0
+notice_range = 10.0
+touch_range = 2.5
+lose_range = 20.0
+use_visibility = true
+move_speed = 2.6
+turn_speed = 220.0
+circle_speed = 0.9
+personal_space = 1.1
+attacks = Array[ExtResource("10_1le5s")]([])
+pause_min = 0.9
+pause_max = 1.8
+blade_radius = 0.14
+poise = 50.0
+poise_reset_time = 2.5
+stagger_time = 0.9
+flinch_time = 0.18

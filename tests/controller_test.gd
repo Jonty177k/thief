@@ -290,6 +290,8 @@ func _run() -> void:
 	check("heavy hits harder and later than light", hp0 - dummy.health == p.sword.heavy_damage and heavy_hit > light_hit + 0.25,
 		"light lands at %.2f s, heavy at %.2f s" % [light_hit, heavy_hit])
 	await wait(0.5)
+	dummy.health = dummy.max_health
+	p.stamina.refill()
 	hp0 = dummy.health
 	for i in 3:
 		await tap("attack_light")

@@ -17,6 +17,7 @@ var world: Node3D
 var player: JBDPlayer
 var hud: CanvasLayer
 var debug: CanvasLayer
+var hitboxes: HitboxDebug
 var grapple: GrappleHook
 
 var resting_fire: Node3D
@@ -58,8 +59,13 @@ func _ready() -> void:
 	debug.player = player
 	debug.visible = _level_setting("show_debug_overlay", false)
 	add_child(debug)
+	hitboxes = HitboxDebug.new()
+	hitboxes.player = player
+	hitboxes.visible = debug.visible
+	add_child(hitboxes)
 
 	player.health_changed.connect(hud.set_health)
+	player.stamina.changed.connect(hud.set_stamina)
 	player.took_hit.connect(hud.flash_damage)
 	player.died.connect(_on_player_died)
 	player.notice.connect(func(text: String) -> void: hud.show_message(text, 1.5))
@@ -102,6 +108,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		hud.toggle_help()
 	elif event.is_action_pressed("toggle_debug"):
 		debug.visible = not debug.visible
+		hitboxes.visible = debug.visible
 	elif event.is_action_pressed("debug_time"):
 		Game.set_hour(Game.hour + 1.0)
 	elif menu_open:

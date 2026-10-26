@@ -1,8 +1,10 @@
 class_name PlayerDash
 extends Node
-## Circle / Alt: a quick physical sidestep in the direction of the left
-## stick, or backward if the stick is centred. It is a burst of velocity
-## through move_and_slide, so walls stop it; the camera stays yours.
+## Circle / Alt: the dodge. A quick, committed sidestep in the direction of
+## the left stick, or backward if the stick is centred. It is a burst of
+## velocity through move_and_slide, so walls and obstacles stop it; the
+## camera stays yours and is never turned. It costs stamina, and Jeffrey
+## is invulnerable only inside its i-frame window.
 
 signal started(direction: Vector3)
 signal finished
@@ -16,8 +18,12 @@ signal finished
 @export_range(0.0, 1.0, 0.05) var falloff := 0.5
 ## Speed carried out of the dash (m/s), so it blends back into walking.
 @export var exit_speed := 3.2
-## Invulnerable for this long from the start. Off (0) for now.
-@export var i_frame_time := 0.0
+@export_group("Invincibility")
+## Invulnerable from this many seconds after the dash starts...
+@export var i_frame_start := 0.06
+## ...until this many. Set both to 0 to turn i-frames off.
+@export var i_frame_end := 0.2
+@export_group("Rules")
 @export var allow_in_air := false
 ## Lets a dash cut a light attack's recovery short.
 @export var cancels_light_recovery := true
@@ -39,7 +45,7 @@ func available() -> bool:
 
 
 func invulnerable() -> bool:
-	return active and time < i_frame_time
+	return active and time >= i_frame_start and time < i_frame_end
 
 
 ## Called before movement each tick.
@@ -47,6 +53,7 @@ func physics_update(delta: float) -> void:
 	if not active:
 		recovery_timer = maxf(recovery_timer - delta, 0.0)
 		if player.input.dash_pressed and player.can_dash():
+			player.stamina.spend(player.stamina.dodge_cost)
 			_start()
 	if not active:
 		return

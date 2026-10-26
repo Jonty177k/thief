@@ -21,6 +21,7 @@ const Lever := preload("res://addons/jbd_level_tools/objects/lever.gd")
 const Pickup := preload("res://addons/jbd_level_tools/objects/pickup.gd")
 const TrainingDummy := preload("res://addons/jbd_level_tools/objects/training_dummy.gd")
 const AttackDummy := preload("res://addons/jbd_level_tools/objects/attack_dummy.gd")
+const Swordsman := preload("res://scripts/combat/swordsman.gd")
 
 ## id: [label, category, tooltip]
 const ITEMS := {
@@ -39,6 +40,7 @@ const ITEMS := {
 	"pickup": ["Pickup", "Gameplay", "A small item to pick up. Set Item Name."],
 	"training_dummy": ["Dummy", "Gameplay", "Straw dummy that shows the damage you do."],
 	"attack_dummy": ["Attack dummy", "Gameplay", "Turns to face you and swings a club. For testing the shield."],
+	"swordsman": ["Swordsman", "Gameplay", "Humanoid sword enemy for melee combat. Its attacks are in the Inspector."],
 	"ground_grass": ["Grass tile", "Ground", "8 x 8 m of gently rolling grass. Its top sits at the click."],
 	"ground_grass_big": ["Big grass", "Ground", "16 x 16 m of rolling grass."],
 	"ground_dirt": ["Dirt tile", "Ground", "8 x 8 m of bare earth."],
@@ -109,7 +111,7 @@ static func label(id: String) -> String:
 static func container_for(id: String) -> String:
 	if id.begins_with("res://"):
 		return "Prefabs"
-	if id in ["warden", "hollow"]:
+	if id in ["warden", "hollow", "swordsman"]:
 		return "Enemies"
 	if id in ["patrol_point", "player_start"]:
 		return ""
@@ -182,6 +184,8 @@ static func make(id: String, rng: RandomNumberGenerator = null) -> Node3D:
 			n = TrainingDummy.new()
 		"attack_dummy":
 			n = AttackDummy.new()
+		"swordsman":
+			n = Swordsman.new()
 		"ground_grass", "ground_grass_big", "ground_dirt", "ground_rocky":
 			var w := 16.0 if id == "ground_grass_big" else 8.0
 			n = _land(Landform.Form.GROUND, Vector3(w, 1.5, w), 0.6, 6.0, rng)

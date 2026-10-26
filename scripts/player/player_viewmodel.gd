@@ -10,12 +10,15 @@ extends Node3D
 
 const SWORD_REST := Vector3(0.36, -0.36, -0.6)
 const SHIELD_REST := Vector3(-0.55, -0.48, -0.62)
-const SHIELD_UP := Vector3(-0.24, -0.24, -0.5)
+const SHIELD_UP := Vector3(-0.2, -0.17, -0.48)
+const SHIELD_BROKEN := Vector3(-0.7, -0.62, -0.5)
 
 var player: CharacterBody3D
 var sword_pivot: Node3D
 var shield_pivot: Node3D
 var _jolt := 0.0
+## Sword recoil: 1 on a hit, more off a wall.
+var _recoil := 0.0
 var _sway := Vector3.ZERO
 
 
@@ -23,6 +26,9 @@ func setup(p: CharacterBody3D) -> void:
 	player = p
 	_build()
 	player.shield.blocked.connect(func(_i: DamageInfo) -> void: _jolt = 1.0)
+	player.shield.guard_broken.connect(func(_i: DamageInfo) -> void: _jolt = 1.6)
+	player.sword.hit_landed.connect(func(_t: Node, _i: DamageInfo) -> void: _recoil = 0.6)
+	player.sword.hit_wall.connect(func(_p: Vector3) -> void: _recoil = 1.0)
 
 
 func _build() -> void:
@@ -38,7 +44,7 @@ func _build() -> void:
 	shield_pivot.name = "Shield"
 	shield_pivot.position = SHIELD_REST
 	add_child(shield_pivot)
-	_box(shield_pivot, Vector3(0.28, 0.34, 0.03), Vector3.ZERO, Color(0.4, 0.3, 0.2))
+	_box(shield_pivot, Vector3(0.32, 0.4, 0.03), Vector3.ZERO, Color(0.4, 0.3, 0.2))
 	_box(shield_pivot, Vector3(0.1, 0.1, 0.05), Vector3(0, 0, -0.03), Color(0.5, 0.5, 0.52))
 	shield_pivot.rotation_degrees = Vector3(0, 25, 0)
 
@@ -114,19 +120,33 @@ func _pose_sword(delta: float) -> void:
 	else:
 		sword_pivot.rotation_degrees = sword_pivot.rotation_degrees.lerp(rest, 1.0 - exp(-14.0 * delta))
 		sword_pivot.position = sword_pivot.position.lerp(SWORD_REST, 1.0 - exp(-14.0 * delta))
+	# Recoil: the blade jars back on impact.
+	_recoil = move_toward(_recoil, 0.0, delta * 4.0)
+	if _recoil > 0.0:
+		sword_pivot.position += Vector3(0.03, 0.04, 0.08) * _recoil
+		sword_pivot.rotation_degrees += Vector3(18, 0, 0) * _recoil
+	# Hold a charged heavy at the top with a slight tremble.
+	if sw.is_heavy() and sw.charge > 0.0 and sw.phase == PlayerSword.Phase.WINDUP:
+		sword_pivot.position += Vector3(randf_range(-1, 1), randf_range(-1, 1), 0) * 0.004 * sw.charge
 	# Tuck the sword away while the shield is up.
 	if player.shield.raised:
 		sword_pivot.position = sword_pivot.position.lerp(SWORD_REST + Vector3(0.08, -0.12, 0.05), 0.5)
 
 
 func _pose_shield(delta: float) -> void:
-	var up: bool = player.shield.raised
-	var target := SHIELD_UP if up else SHIELD_REST
+	var sh: PlayerShield = player.shield
+	# Follows the real raise progress, so it's only fully up when it blocks.
+	var up := _ease_in_out(sh.raise_progress)
+	var target := SHIELD_REST.lerp(SHIELD_UP, up)
+	var rot := Vector3(0, lerpf(25.0, 5.0, up), 0)
+	if sh.guard_broken_now():
+		target = SHIELD_BROKEN
+		rot = Vector3(-35, 60, -25)
 	_jolt = move_toward(_jolt, 0.0, delta * 5.0)
-	target += Vector3(0, 0.02, 0.12) * _jolt
-	shield_pivot.position = shield_pivot.position.lerp(target, 1.0 - exp(-18.0 * delta))
-	var yaw := 5.0 if up else 25.0
-	shield_pivot.rotation_degrees = shield_pivot.rotation_degrees.lerp(Vector3(-8.0 * _jolt, yaw, 0), 1.0 - exp(-18.0 * delta))
+	target += Vector3(0, 0.02, 0.12) * minf(_jolt, 1.0)
+	rot += Vector3(-8.0 * _jolt, 0, 0)
+	shield_pivot.position = shield_pivot.position.lerp(target, 1.0 - exp(-24.0 * delta))
+	shield_pivot.rotation_degrees = shield_pivot.rotation_degrees.lerp(rot, 1.0 - exp(-24.0 * delta))
 
 
 static func _ease_out(t: float) -> float:

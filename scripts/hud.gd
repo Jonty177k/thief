@@ -3,6 +3,7 @@ extends CanvasLayer
 ## Everything is built in code so the scene file stays tiny.
 
 var health_bar: ProgressBar
+var stamina_bar: ProgressBar
 var gem: Panel
 var gem_style: StyleBoxFlat
 var clock: Label
@@ -27,6 +28,8 @@ func _ready() -> void:
 
 	health_bar = _bar(Color(0.65, 0.12, 0.1), Vector2(8, 8), Vector2(120, 6))
 	root.add_child(health_bar)
+	stamina_bar = _bar(Color(0.25, 0.55, 0.22), Vector2(8, 16), Vector2(100, 4))
+	root.add_child(stamina_bar)
 
 	# The light gem, Thief-style: bright means seen.
 	gem_style = StyleBoxFlat.new()
@@ -84,7 +87,7 @@ func _ready() -> void:
 	root.add_child(message)
 
 	help = _label(9, HORIZONTAL_ALIGNMENT_LEFT)
-	help.position = Vector2(8, 20)
+	help.position = Vector2(8, 24)
 	help.modulate = Color(1, 1, 1, 0.8)
 	_update_help()
 	root.add_child(help)
@@ -157,6 +160,11 @@ func _build_rest_menu(root: Control) -> void:
 func set_health(hp: float, max_hp: float) -> void:
 	health_bar.max_value = max_hp
 	health_bar.value = hp
+
+
+func set_stamina(value: float, max_value: float) -> void:
+	stamina_bar.max_value = max_value
+	stamina_bar.value = value
 
 
 func set_grapple_enabled(on: bool) -> void:
