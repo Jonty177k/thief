@@ -86,6 +86,27 @@ static func splash() -> AudioStreamWAV:
 		return (randf_range(-0.6, 0.6) * env + bloop) * 0.5, 0.3)
 
 
+## The hookshot firing: a mechanical clack and the cable paying out.
+static func hook_fire() -> AudioStreamWAV:
+	return _synth("hook_fire", func(t: float) -> float:
+		var clack := (sin(TAU * 900.0 * t) * 0.5 + randf_range(-0.6, 0.6)) * exp(-t * 60.0)
+		var whir := sin(TAU * (300.0 + 200.0 * t) * t) * 0.15 * sin(clampf(t / 0.35, 0.0, 1.0) * PI)
+		return clack + whir, 0.35)
+
+
+## Metal skidding off stone: a hook or anchor that didn't bite.
+static func clink() -> AudioStreamWAV:
+	return _synth("clink", func(t: float) -> float:
+		var env := exp(-t * 22.0)
+		return (sin(TAU * 1650.0 * t) * 0.4 + sin(TAU * 2900.0 * t) * 0.25 + randf_range(-0.2, 0.2)) * env, 0.25)
+
+
+## A small tick: an anchor set, a mode switched.
+static func anchor_tick() -> AudioStreamWAV:
+	return _synth("anchor_tick", func(t: float) -> float:
+		return (sin(TAU * 1200.0 * t) * 0.5 + randf_range(-0.4, 0.4)) * exp(-t * 90.0), 0.08)
+
+
 static func _synth(key: String, wave: Callable, length: float) -> AudioStreamWAV:
 	if _cache.has(key):
 		return _cache[key]

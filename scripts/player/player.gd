@@ -17,7 +17,7 @@ signal state_changed(state: State)
 signal notice(text: String)
 signal footstep(loud: bool)
 
-enum State { NORMAL, CROUCHING, AIRBORNE, DASHING, LIGHT_ATTACK, HEAVY_ATTACK, BLOCKING, INTERACTING, CLIMBING, DEAD, GUARD_BROKEN, AIMING_BOW, SWITCHING_WEAPON }
+enum State { NORMAL, CROUCHING, AIRBORNE, DASHING, LIGHT_ATTACK, HEAVY_ATTACK, BLOCKING, INTERACTING, CLIMBING, DEAD, GUARD_BROKEN, AIMING_BOW, SWITCHING_WEAPON, HOOK_PULLING, WIRE_TRAVERSAL }
 
 @export var max_hp := 100.0
 ## Falling below this height kills Jeffrey.
@@ -134,6 +134,10 @@ func _update_state() -> void:
 	var s := State.NORMAL
 	if dead:
 		s = State.DEAD
+	elif tool and tool.state == PlayerHookshot.State.HOOK_PULLING:
+		s = State.HOOK_PULLING
+	elif tool and tool.state == PlayerHookshot.State.WIRE_TRAVERSAL:
+		s = State.WIRE_TRAVERSAL
 	elif dash.active:
 		s = State.DASHING
 	elif sword.is_heavy():
@@ -208,6 +212,13 @@ func can_block() -> bool:
 ## moment, and not mid-dash.
 func can_draw_bow() -> bool:
 	return not _busy_elsewhere() and loadout.is_ready(PlayerLoadout.Slot.BOW) and not dash.active \
+		and not movement.ladder and not interaction.interacting()
+
+
+## The hookshot fires (and the wire gun anchors) only when it's in hand and
+## Jeffrey isn't dashing, climbing or using something.
+func can_use_tool() -> bool:
+	return not dead and loadout.is_ready(PlayerLoadout.Slot.TOOL) and not dash.active \
 		and not movement.ladder and not interaction.interacting()
 
 
@@ -302,6 +313,9 @@ func respawn(at: Vector3) -> void:
 	input.enabled = not input_locked
 	stamina.refill()
 	shield.guard_break_timer = 0.0
+	bow.cancel()
+	if tool:
+		tool.cancel()
 	_update_state()
 	health_changed.emit(hp, max_hp)
 

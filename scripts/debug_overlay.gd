@@ -76,6 +76,7 @@ func text() -> String:
 		"dash      %s" % dash,
 		"i-frames  %s" % ("ON" if d.invulnerable() else "off"),
 		"enemy     %s" % _enemy_text(),
+		"tool      %s" % _tool_text(),
 		"use       %s" % target,
 		"input     %s   fps %d" % ["gamepad" if p.input.using_gamepad else "keyboard/mouse", Engine.get_frames_per_second()],
 		"pad       %s" % Gamepad.describe(),
@@ -96,3 +97,15 @@ func _enemy_text() -> String:
 		return "-"
 	return "%d/%d  %s%s  %.1fm" % [ceili(best.health), roundi(best.max_health), best.describe(),
 		"  HITBOX" if best.hitbox_active else "", best_d]
+
+
+func _tool_text() -> String:
+	var t = player.tool
+	if t == null:
+		return "-"
+	var s: String = "%s  %s" % ["hook" if t.mode == PlayerHookshot.Mode.HOOKSHOT else "wire", t.state_name().to_lower()]
+	if t.state == PlayerHookshot.State.WIRE_TRAVERSAL and t.wire:
+		s += " %.0f%%" % (t.wire_progress() * 100.0)
+	elif player.loadout.current == PlayerLoadout.Slot.TOOL and t.aim == PlayerHookshot.Aim.INVALID:
+		s += "  (%s)" % t.aim_reason
+	return s

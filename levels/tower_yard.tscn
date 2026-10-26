@@ -1,0 +1,455 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://addons/jbd_level_tools/objects/level.gd" id="1_856sh"]
+[ext_resource type="Script" path="res://addons/jbd_level_tools/objects/block.gd" id="2_fr6w3"]
+[ext_resource type="Material" path="res://addons/jbd_level_tools/materials/grid.tres" id="3_ojbwu"]
+[ext_resource type="Material" path="res://addons/jbd_level_tools/materials/ruin.tres" id="4_j0beb"]
+[ext_resource type="Script" path="res://addons/jbd_level_tools/objects/ladder.gd" id="5_mjp7d"]
+[ext_resource type="Material" path="res://addons/jbd_level_tools/materials/wood.tres" id="6_cl1qm"]
+[ext_resource type="Script" path="res://addons/jbd_level_tools/objects/player_start.gd" id="7_qrxdy"]
+
+[node name="TowerYard" type="Node3D"]
+script = ExtResource("1_856sh")
+level_name = "Tower yard"
+start_hour = 10.0
+intro_text = "Tower yard. 3 for the hookshot, L1 / RMB for wire mode. Wood bites, stone doesn't."
+allow_grapple = false
+show_debug_overlay = true
+colossus_tremors = false
+
+[node name="Building" type="Node3D" parent="."]
+
+[node name="Floor" type="StaticBody3D" parent="Building"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+script = ExtResource("2_fr6w3")
+shape = 0
+size = Vector3(60, 1, 60)
+material = ExtResource("3_ojbwu")
+grapple_anchor = false
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 1
+roughness = 0.3
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Building"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -30.25)
+script = ExtResource("2_fr6w3")
+shape = 0
+size = Vector3(61, 3, 0.5)
+material = ExtResource("4_j0beb")
+grapple_anchor = false
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 1
+roughness = 0.3
+
+[node name="StaticBody3D2" type="StaticBody3D" parent="Building"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30.25, 0, 0)
+script = ExtResource("2_fr6w3")
+shape = 0
+size = Vector3(0.5, 3, 60)
+material = ExtResource("4_j0beb")
+grapple_anchor = false
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 1
+roughness = 0.3
+
+[node name="StaticBody3D3" type="StaticBody3D" parent="Building"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 30.25)
+script = ExtResource("2_fr6w3")
+shape = 0
+size = Vector3(61, 3, 0.5)
+material = ExtResource("4_j0beb")
+grapple_anchor = false
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 1
+roughness = 0.3
+
+[node name="StaticBody3D4" type="StaticBody3D" parent="Building"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30.25, 0, 0)
+script = ExtResource("2_fr6w3")
+shape = 0
+size = Vector3(0.5, 3, 60)
+material = ExtResource("4_j0beb")
+grapple_anchor = false
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 1
+roughness = 0.3
+
+[node name="TowerA" type="StaticBody3D" parent="Building"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, -5)
+script = ExtResource("2_fr6w3")
+shape = 0
+size = Vector3(8, 12, 8)
+material = ExtResource("4_j0beb")
+grapple_anchor = false
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 1
+roughness = 0.3
+
+[node name="TowerB" type="StaticBody3D" parent="Building"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, -5)
+script = ExtResource("2_fr6w3")
+shape = 0
+size = Vector3(8, 10, 8)
+material = ExtResource("4_j0beb")
+grapple_anchor = false
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 1
+roughness = 0.3
+
+[node name="TowerBLadder" type="StaticBody3D" parent="Building"]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 14.06, 0, -5)
+script = ExtResource("5_mjp7d")
+height = 10.0
+width = 0.6
+rung_spacing = 0.3
+material = ExtResource("6_cl1qm")
+
+[node name="LowHouse" type="StaticBody3D" parent="Building"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, 0, 12)
+script = ExtResource("2_fr6w3")
+shape = 0
+size = Vector3(6, 5, 6)
+material = ExtResource("4_j0beb")
+grapple_anchor = false
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 1
+roughness = 0.3
+
+[node name="LowHouseLadder" type="StaticBody3D" parent="Building"]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 14.94, 0, 12)
+script = ExtResource("5_mjp7d")
+height = 5.0
+width = 0.6
+rung_spacing = 0.3
+material = ExtResource("6_cl1qm")
+
+[node name="StonePillar" type="StaticBody3D" parent="Building"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, 10)
+script = ExtResource("2_fr6w3")
+shape = 3
+size = Vector3(2, 8, 2)
+material = ExtResource("4_j0beb")
+grapple_anchor = false
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 1
+roughness = 0.3
+
+[node name="BlockingWall" type="StaticBody3D" parent="Building"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 12)
+script = ExtResource("2_fr6w3")
+shape = 0
+size = Vector3(6, 2.8, 0.6)
+material = ExtResource("4_j0beb")
+grapple_anchor = false
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 1
+roughness = 0.3
+
+[node name="BeamPost" type="StaticBody3D" parent="Building"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 6.5)
+script = ExtResource("2_fr6w3")
+shape = 0
+size = Vector3(0.4, 4.8, 0.4)
+material = ExtResource("4_j0beb")
+grapple_anchor = false
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 1
+roughness = 0.3
+
+[node name="PostPillar" type="StaticBody3D" parent="Building"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -22)
+script = ExtResource("2_fr6w3")
+shape = 0
+size = Vector3(2, 10, 2)
+material = ExtResource("4_j0beb")
+grapple_anchor = false
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 1
+roughness = 0.3
+
+[node name="PlayerStart" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 20)
+script = ExtResource("7_qrxdy")
+
+[node name="Signs" type="Node3D" parent="."]
+
+[node name="Label3D" type="Label3D" parent="Signs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.2, 22)
+pixel_size = 0.008
+billboard = 2
+modulate = Color(1, 0.92, 0.7, 1)
+text = "TOWER YARD
+3: hookshot   R2 / LMB fire   L1 / RMB: hook or wire
+Wood bites. Stone doesn't."
+font_size = 40
+outline_size = 10
+
+[node name="Label3D2" type="Label3D" parent="Signs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 14, -5)
+pixel_size = 0.008
+billboard = 2
+modulate = Color(1, 0.92, 0.7, 1)
+text = "Tower A (12 m)"
+font_size = 40
+outline_size = 10
+
+[node name="Label3D3" type="Label3D" parent="Signs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 12, -5)
+pixel_size = 0.008
+billboard = 2
+modulate = Color(1, 0.92, 0.7, 1)
+text = "Tower B (10 m)"
+font_size = 40
+outline_size = 10
+
+[node name="Label3D4" type="Label3D" parent="Signs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 16, -9)
+pixel_size = 0.008
+billboard = 2
+modulate = Color(1, 0.92, 0.7, 1)
+text = "Wire the gap: anchor on one deck's edge, then the other"
+font_size = 40
+outline_size = 10
+
+[node name="Label3D5" type="Label3D" parent="Signs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.5, 4, 1.5)
+pixel_size = 0.008
+billboard = 2
+modulate = Color(1, 0.92, 0.7, 1)
+text = "Hook the deck's edge to climb onto the roof.
+The beams are perches."
+font_size = 40
+outline_size = 10
+
+[node name="Label3D6" type="Label3D" parent="Signs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 7.6, -5)
+pixel_size = 0.008
+billboard = 2
+modulate = Color(1, 0.92, 0.7, 1)
+text = "High ledge"
+font_size = 40
+outline_size = 10
+
+[node name="Label3D7" type="Label3D" parent="Signs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, 7, 12)
+pixel_size = 0.008
+billboard = 2
+modulate = Color(1, 0.92, 0.7, 1)
+text = "Low roof (5 m): wire it up to tower B"
+font_size = 40
+outline_size = 10
+
+[node name="Label3D8" type="Label3D" parent="Signs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 9, 10)
+pixel_size = 0.008
+billboard = 2
+modulate = Color(1, 0.92, 0.7, 1)
+text = "Stone pillar: the hook won't bite"
+font_size = 40
+outline_size = 10
+
+[node name="Label3D9" type="Label3D" parent="Signs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, 13)
+pixel_size = 0.008
+billboard = 2
+modulate = Color(1, 0.92, 0.7, 1)
+text = "Hook the beam behind the wall:
+the wall stops you"
+font_size = 40
+outline_size = 10
+
+[node name="Label3D10" type="Label3D" parent="Signs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 11, -22)
+pixel_size = 0.008
+billboard = 2
+modulate = Color(1, 0.92, 0.7, 1)
+text = "A wire can't go through stone"
+font_size = 40
+outline_size = 10
+
+[node name="Label3D11" type="Label3D" parent="Signs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.2, 2.4, 4)
+pixel_size = 0.008
+billboard = 2
+modulate = Color(1, 0.92, 0.7, 1)
+text = "Too steep to wire to the roof"
+font_size = 40
+outline_size = 10
+
+[node name="Hookable" type="Node3D" parent="."]
+
+[node name="TowerADeck" type="StaticBody3D" parent="Hookable"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 12, -5)
+script = ExtResource("2_fr6w3")
+shape = 0
+size = Vector3(8.4, 0.3, 8.4)
+material = ExtResource("6_cl1qm")
+grapple_anchor = true
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 1
+roughness = 0.3
+
+[node name="TowerBDeck" type="StaticBody3D" parent="Hookable"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 10, -5)
+script = ExtResource("2_fr6w3")
+shape = 0
+size = Vector3(8.4, 0.3, 8.4)
+material = ExtResource("6_cl1qm")
+grapple_anchor = true
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 1
+roughness = 0.3
+
+[node name="BeamA_Top" type="StaticBody3D" parent="Hookable"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 9.4, -0.4)
+script = ExtResource("2_fr6w3")
+shape = 0
+size = Vector3(1.6, 0.4, 1.2)
+material = ExtResource("6_cl1qm")
+grapple_anchor = true
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 1
+roughness = 0.3
+
+[node name="BeamA_Mid" type="StaticBody3D" parent="Hookable"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.5, 6, -0.6)
+script = ExtResource("2_fr6w3")
+shape = 0
+size = Vector3(1.6, 0.4, 0.8)
+material = ExtResource("6_cl1qm")
+grapple_anchor = true
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 1
+roughness = 0.3
+
+[node name="LedgeB" type="StaticBody3D" parent="Hookable"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.2, 6, -5)
+script = ExtResource("2_fr6w3")
+shape = 0
+size = Vector3(1.6, 0.4, 3)
+material = ExtResource("6_cl1qm")
+grapple_anchor = true
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 1
+roughness = 0.3
+
+[node name="LowHouseRoof" type="StaticBody3D" parent="Hookable"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, 5, 12)
+script = ExtResource("2_fr6w3")
+shape = 0
+size = Vector3(6.4, 0.3, 6.4)
+material = ExtResource("6_cl1qm")
+grapple_anchor = true
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 1
+roughness = 0.3
+
+[node name="BeamBehindWall" type="StaticBody3D" parent="Hookable"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.8, 6.5)
+script = ExtResource("2_fr6w3")
+shape = 0
+size = Vector3(1.4, 0.4, 0.8)
+material = ExtResource("6_cl1qm")
+grapple_anchor = true
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 1
+roughness = 0.3
+
+[node name="PostWest" type="StaticBody3D" parent="Hookable"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 0, -22)
+script = ExtResource("2_fr6w3")
+shape = 0
+size = Vector3(2.5, 6, 2.5)
+material = ExtResource("6_cl1qm")
+grapple_anchor = true
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 1
+roughness = 0.3
+
+[node name="PostEast" type="StaticBody3D" parent="Hookable"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 0, -22)
+script = ExtResource("2_fr6w3")
+shape = 0
+size = Vector3(2.5, 6, 2.5)
+material = ExtResource("6_cl1qm")
+grapple_anchor = true
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 1
+roughness = 0.3
+
+[node name="LowBeam" type="StaticBody3D" parent="Hookable"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, 4)
+script = ExtResource("2_fr6w3")
+shape = 0
+size = Vector3(1.6, 1, 1.6)
+material = ExtResource("6_cl1qm")
+grapple_anchor = true
+opening = Vector2(1.6, 2.6)
+sill = 1.0
+steps = 8
+smooth_collision = true
+rock_seed = 1
+roughness = 0.3

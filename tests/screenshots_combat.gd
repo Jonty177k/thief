@@ -18,6 +18,11 @@ var shots := [
 	["bow_03_torch_lit", "res://levels/archery_range.tscn", 23.0, Vector3(-6, 0, 5), Vector3(-12, 1.5, 2), "bow"],
 	["bow_04_torch_out", "res://levels/archery_range.tscn", 23.0, Vector3(-6, 0, 5), Vector3(-12, 1.5, 2), "douse"],
 	["bow_05_crates_burning", "res://levels/archery_range.tscn", 23.0, Vector3(2, 0, 3), Vector3(5, 0.8, -3), "burn"],
+	["hook_01_yard", "res://levels/tower_yard.tscn", 16.0, Vector3(0, 0, 20), Vector3(0, 7, -5), "tool"],
+	["hook_02_aim", "res://levels/tower_yard.tscn", 16.0, Vector3(-10, 0, 6), Vector3(-10, 12.15, -0.79), "tool"],
+	["hook_03_pull", "res://levels/tower_yard.tscn", 16.0, Vector3(-10, 0, 6), Vector3(-10, 12.15, -0.79), "pull"],
+	["hook_04_wire", "res://levels/tower_yard.tscn", 16.0, Vector3(-8, 12.3, -5), Vector3(6.3, 10.8, -5), "wire"],
+	["hook_05_on_wire", "res://levels/tower_yard.tscn", 16.0, Vector3(-7.3, 12.3, -5), Vector3(6.3, 11.5, -5), "walk"],
 ]
 
 
@@ -81,6 +86,35 @@ func _shoot(s: Array) -> void:
 					await get_tree().create_timer(2.6).timeout
 				_:
 					await get_tree().create_timer(0.5).timeout
+		"tool", "pull", "wire", "walk":
+			var t: PlayerHookshot = p.tool
+			t.cancel()
+			p.loadout.equip_now(PlayerLoadout.Slot.TOOL)
+			await get_tree().create_timer(0.3).timeout
+			if s[5] == "pull":
+				t.cooldown_timer = 0.0
+				await _press("attack_heavy")
+				while t.state != PlayerHookshot.State.HOOK_PULLING:
+					await get_tree().physics_frame
+				await get_tree().create_timer(0.45).timeout
+			elif s[5] == "wire" or s[5] == "walk":
+				t.set_mode(PlayerHookshot.Mode.WIRE)
+				var deck_a: Node = main.world.get_node("Hookable/TowerADeck")
+				var deck_b: Node = main.world.get_node("Hookable/TowerBDeck")
+				var v: Dictionary = t.validate_wire({"point": Vector3(-6.3, 12.3, -5), "normal": Vector3.UP, "collider": deck_a},
+					{"point": Vector3(6.3, 10.3, -5), "normal": Vector3.UP, "collider": deck_b})
+				var w := TightWire.create(main.world, v.a, v.b, v.dismount_a, v.dismount_b)
+				w.mount_requested.connect(t.mount)
+				t.wires.append(w)
+				if s[5] == "walk":
+					t.mount(w, 0)
+					await get_tree().create_timer(t.mount_time + 0.1).timeout
+					Input.action_press("move_forward")
+					await get_tree().create_timer(3.0).timeout
+					Input.action_release("move_forward")
+					var c2: Vector3 = s[4] - p.camera.global_position
+					p.camera_rig.set_pitch_degrees(rad_to_deg(atan2(c2.y, Vector2(c2.x, c2.z).length())))
+				await get_tree().create_timer(0.3).timeout
 	main.hud.message.visible = false
 	await RenderingServer.frame_post_draw
 	var img := get_viewport().get_texture().get_image()

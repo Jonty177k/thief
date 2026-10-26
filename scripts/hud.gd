@@ -213,6 +213,12 @@ func set_clock(text: String) -> void:
 	clock.text = text
 
 
+## The hookshot's crosshair: 0 nothing in reach, 1 it'll bite, 2 it won't.
+func set_tool_aim(aim: int) -> void:
+	crosshair.text = ["+", "o", "x"][aim]
+	crosshair.modulate = [Color(1, 1, 1, 0.6), Color(0.95, 0.75, 0.35), Color(0.85, 0.3, 0.25, 0.9)][aim]
+
+
 func set_grapple_aim(valid: bool) -> void:
 	crosshair.text = "o" if valid else "+"
 	crosshair.modulate = Color(0.95, 0.75, 0.35) if valid else Color(1, 1, 1, 0.6)

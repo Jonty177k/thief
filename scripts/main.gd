@@ -122,7 +122,10 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _process(delta: float) -> void:
 	hud.set_visibility(player.visibility)
-	hud.set_grapple_aim(grapple != null and grapple.aim_valid)
+	if player.tool and player.loadout.current == PlayerLoadout.Slot.TOOL:
+		hud.set_tool_aim(player.tool.aim)
+	else:
+		hud.set_grapple_aim(grapple != null and grapple.aim_valid)
 	hud.set_clock(Game.clock_text())
 	_update_weapon_hud()
 

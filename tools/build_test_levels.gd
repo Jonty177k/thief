@@ -4,6 +4,7 @@ extends Node
 ##   godot --headless --path . res://tools/build_test_levels.tscn
 ##   levels/combat_arena.tscn    sword and shield vs. a dummy and a swordsman
 ##   levels/archery_range.tscn   the bow: torches, fire, water, a switch
+##   levels/tower_yard.tscn      the hookshot and wire gun: towers, rooftops, gaps
 ## Re-running overwrites them, so edit a level by hand OR here.
 
 const Catalog := preload("res://addons/jbd_level_tools/catalog.gd")
@@ -16,7 +17,7 @@ var groups := {}
 
 func _ready() -> void:
 	var err := OK
-	for build in [_combat_arena, _archery_range]:
+	for build in [_combat_arena, _archery_range, _tower_yard]:
 		err = max(err, _save(build))
 	get_tree().quit(err)
 
@@ -216,3 +217,70 @@ func _archery_range() -> String:
 		c.queue_free()
 		warden.remove_child(c)
 	return "res://levels/archery_range.tscn"
+
+
+# --- Tower yard ------------------------------------------------------------------
+
+## A wooden (hookshot-able) block: Grapple Anchor ticked.
+func _wood(size: Vector3, pos: Vector3, name := "") -> JBDBlock:
+	var b := _box(size, pos, "wood", name, "Hookable")
+	b.grapple_anchor = true
+	return b
+
+
+func _tower_yard() -> String:
+	level.name = "TowerYard"
+	level.level_name = "Tower yard"
+	level.start_hour = 10.0
+	level.intro_text = "Tower yard. 3 for the hookshot, L1 / RMB for wire mode. Wood bites, stone doesn't."
+	_room(Vector2(60, 60), 3.0, "ruin")
+	_start(Vector3(0, 0, 20))
+	_sign("TOWER YARD\n3: hookshot   R2 / LMB fire   L1 / RMB: hook or wire\nWood bites. Stone doesn't.", Vector3(0, 3.2, 22))
+
+	# Tower A (12 m) and tower B (10 m), 12 m apart, with wooden roof decks.
+	_box(Vector3(8, 12, 8), Vector3(-10, 0, -5), "ruin", "TowerA")
+	_wood(Vector3(8.4, 0.3, 8.4), Vector3(-10, 12, -5), "TowerADeck")
+	_box(Vector3(8, 10, 8), Vector3(10, 0, -5), "ruin", "TowerB")
+	_wood(Vector3(8.4, 0.3, 8.4), Vector3(10, 10, -5), "TowerBDeck")
+	_sign("Tower A (12 m)", Vector3(-10, 14, -5))
+	_sign("Tower B (10 m)", Vector3(10, 12, -5))
+	_sign("Wire the gap: anchor on one deck's edge, then the other", Vector3(0, 16, -9))
+
+	# Beams sticking out of tower A's south face: haul up and climb on. The
+	# deck's wooden edge above is a target too, straight onto the roof.
+	_wood(Vector3(1.6, 0.4, 1.2), Vector3(-10, 9.4, -0.4), "BeamA_Top")
+	_wood(Vector3(1.6, 0.4, 0.8), Vector3(-12.5, 6.0, -0.6), "BeamA_Mid")
+	_sign("Hook the deck's edge to climb onto the roof.\nThe beams are perches.", Vector3(-12.5, 4.0, 1.5))
+
+	# A wooden ledge on tower B's west face, and a ladder up its east face.
+	_wood(Vector3(1.6, 0.4, 3), Vector3(5.2, 6, -5), "LedgeB")
+	_sign("High ledge", Vector3(4.5, 7.6, -5))
+	var ladder: JBDLadder = _piece("Building", "ladder", Vector3(14.06, 0, -5), -90.0, "TowerBLadder")
+	ladder.height = 10.0
+
+	# A low building with a wooden roof, for a sloping wire up to tower B.
+	_box(Vector3(6, 5, 6), Vector3(18, 0, 12), "ruin", "LowHouse")
+	_wood(Vector3(6.4, 0.3, 6.4), Vector3(18, 5, 12), "LowHouseRoof")
+	var low_ladder: JBDLadder = _piece("Building", "ladder", Vector3(14.94, 0, 12), 90.0, "LowHouseLadder")
+	low_ladder.height = 5.0
+	_sign("Low roof (5 m): wire it up to tower B", Vector3(18, 7, 12))
+
+	# Stone: the hook won't bite it.
+	_block("Building", JBDBlock.Shape.PILLAR, Vector3(2, 8, 2), Vector3(-4, 0, 10), "ruin", "StonePillar")
+	_sign("Stone pillar: the hook won't bite", Vector3(-4, 9, 10))
+
+	# A wall between you and a beam: the hook flies over, your body doesn't.
+	_box(Vector3(6, 2.8, 0.6), Vector3(0, 0, 12), "ruin", "BlockingWall")
+	_wood(Vector3(1.4, 0.4, 0.8), Vector3(0, 4.8, 6.5), "BeamBehindWall")
+	_box(Vector3(0.4, 4.8, 0.4), Vector3(0, 0, 6.5), "ruin", "BeamPost")
+	_sign("Hook the beam behind the wall:\nthe wall stops you", Vector3(0, 4.0, 13))
+
+	# Two wooden posts with a stone pillar between: a wire can't pass it.
+	_wood(Vector3(2.5, 6, 2.5), Vector3(-9, 0, -22), "PostWest")
+	_wood(Vector3(2.5, 6, 2.5), Vector3(9, 0, -22), "PostEast")
+	_box(Vector3(2, 10, 2), Vector3(0, 0, -22), "ruin", "PostPillar")
+	_sign("A wire can't go through stone", Vector3(0, 11, -22))
+	# And a beam low by tower A, too steep to wire to its roof.
+	_wood(Vector3(1.6, 1.0, 1.6), Vector3(-10, 0, 4), "LowBeam")
+	_sign("Too steep to wire to the roof", Vector3(-12.2, 2.4, 4))
+	return "res://levels/tower_yard.tscn"

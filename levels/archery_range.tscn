@@ -1,23 +1,23 @@
 [gd_scene load_steps=16 format=3]
 
-[ext_resource type="Script" path="res://addons/jbd_level_tools/objects/level.gd" id="1_8kxdd"]
-[ext_resource type="Script" path="res://addons/jbd_level_tools/objects/block.gd" id="2_1i1me"]
-[ext_resource type="Material" path="res://addons/jbd_level_tools/materials/grid.tres" id="3_ukoax"]
-[ext_resource type="Material" path="res://addons/jbd_level_tools/materials/ruin.tres" id="4_wtrat"]
-[ext_resource type="Material" path="res://addons/jbd_level_tools/materials/dark.tres" id="5_w45ha"]
-[ext_resource type="Material" path="res://addons/jbd_level_tools/materials/wood.tres" id="6_lsya8"]
-[ext_resource type="Script" path="res://scripts/elements/flammable.gd" id="7_0xev0"]
-[ext_resource type="Script" path="res://addons/jbd_level_tools/objects/door.gd" id="8_gm4ta"]
-[ext_resource type="Material" path="res://addons/jbd_level_tools/materials/iron.tres" id="9_irano"]
-[ext_resource type="Script" path="res://addons/jbd_level_tools/objects/pickup.gd" id="10_g4mnw"]
-[ext_resource type="Script" path="res://addons/jbd_level_tools/objects/torch.gd" id="11_odl2r"]
-[ext_resource type="Script" path="res://addons/jbd_level_tools/objects/training_dummy.gd" id="12_v1o5q"]
-[ext_resource type="Script" path="res://addons/jbd_level_tools/objects/arrow_switch.gd" id="13_ax342"]
-[ext_resource type="Script" path="res://addons/jbd_level_tools/objects/player_start.gd" id="14_6tw88"]
-[ext_resource type="Script" path="res://addons/jbd_level_tools/objects/enemy_spawner.gd" id="15_nbey4"]
+[ext_resource type="Script" path="res://addons/jbd_level_tools/objects/level.gd" id="1_dyow1"]
+[ext_resource type="Script" path="res://addons/jbd_level_tools/objects/block.gd" id="2_2yv7c"]
+[ext_resource type="Material" path="res://addons/jbd_level_tools/materials/grid.tres" id="3_gd64h"]
+[ext_resource type="Material" path="res://addons/jbd_level_tools/materials/ruin.tres" id="4_mbg04"]
+[ext_resource type="Material" path="res://addons/jbd_level_tools/materials/dark.tres" id="5_jontx"]
+[ext_resource type="Material" path="res://addons/jbd_level_tools/materials/wood.tres" id="6_rj6si"]
+[ext_resource type="Script" path="res://scripts/elements/flammable.gd" id="7_6d2sk"]
+[ext_resource type="Script" path="res://addons/jbd_level_tools/objects/door.gd" id="8_73u45"]
+[ext_resource type="Material" path="res://addons/jbd_level_tools/materials/iron.tres" id="9_yojr7"]
+[ext_resource type="Script" path="res://addons/jbd_level_tools/objects/pickup.gd" id="10_0xcwr"]
+[ext_resource type="Script" path="res://addons/jbd_level_tools/objects/torch.gd" id="11_jtqh0"]
+[ext_resource type="Script" path="res://addons/jbd_level_tools/objects/training_dummy.gd" id="12_x5jt5"]
+[ext_resource type="Script" path="res://addons/jbd_level_tools/objects/arrow_switch.gd" id="13_6o1fe"]
+[ext_resource type="Script" path="res://addons/jbd_level_tools/objects/player_start.gd" id="14_alawp"]
+[ext_resource type="Script" path="res://addons/jbd_level_tools/objects/enemy_spawner.gd" id="15_wm360"]
 
 [node name="ArcheryRange" type="Node3D"]
-script = ExtResource("1_8kxdd")
+script = ExtResource("1_dyow1")
 level_name = "Archery range"
 start_hour = 23.0
 intro_text = "Archery range. 2 for the bow, Q / D-pad up for fire and water arrows."
@@ -29,10 +29,10 @@ colossus_tremors = false
 
 [node name="Floor" type="StaticBody3D" parent="Building"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
-script = ExtResource("2_1i1me")
+script = ExtResource("2_2yv7c")
 shape = 0
 size = Vector3(24, 1, 30)
-material = ExtResource("3_ukoax")
+material = ExtResource("3_gd64h")
 grapple_anchor = false
 opening = Vector2(1.6, 2.6)
 sill = 1.0
@@ -43,10 +43,10 @@ roughness = 0.3
 
 [node name="StaticBody3D" type="StaticBody3D" parent="Building"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.25, 0, 0)
-script = ExtResource("2_1i1me")
+script = ExtResource("2_2yv7c")
 shape = 0
 size = Vector3(0.5, 5, 30)
-material = ExtResource("4_wtrat")
+material = ExtResource("4_mbg04")
 grapple_anchor = false
 opening = Vector2(1.6, 2.6)
 sill = 1.0
@@ -57,10 +57,10 @@ roughness = 0.3
 
 [node name="StaticBody3D2" type="StaticBody3D" parent="Building"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.25, 0, 0)
-script = ExtResource("2_1i1me")
+script = ExtResource("2_2yv7c")
 shape = 0
 size = Vector3(0.5, 5, 30)
-material = ExtResource("4_wtrat")
+material = ExtResource("4_mbg04")
 grapple_anchor = false
 opening = Vector2(1.6, 2.6)
 sill = 1.0
@@ -71,10 +71,10 @@ roughness = 0.3
 
 [node name="StaticBody3D3" type="StaticBody3D" parent="Building"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 15.25)
-script = ExtResource("2_1i1me")
+script = ExtResource("2_2yv7c")
 shape = 0
 size = Vector3(25, 5, 0.5)
-material = ExtResource("4_wtrat")
+material = ExtResource("4_mbg04")
 grapple_anchor = false
 opening = Vector2(1.6, 2.6)
 sill = 1.0
@@ -85,10 +85,10 @@ roughness = 0.3
 
 [node name="StaticBody3D4" type="StaticBody3D" parent="Building"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.75, 0, -15.25)
-script = ExtResource("2_1i1me")
+script = ExtResource("2_2yv7c")
 shape = 0
 size = Vector3(10.5, 5, 0.5)
-material = ExtResource("4_wtrat")
+material = ExtResource("4_mbg04")
 grapple_anchor = false
 opening = Vector2(1.6, 2.6)
 sill = 1.0
@@ -99,10 +99,10 @@ roughness = 0.3
 
 [node name="StaticBody3D5" type="StaticBody3D" parent="Building"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.75, 0, -15.25)
-script = ExtResource("2_1i1me")
+script = ExtResource("2_2yv7c")
 shape = 0
 size = Vector3(10.5, 5, 0.5)
-material = ExtResource("4_wtrat")
+material = ExtResource("4_mbg04")
 grapple_anchor = false
 opening = Vector2(1.6, 2.6)
 sill = 1.0
@@ -113,10 +113,10 @@ roughness = 0.3
 
 [node name="VaultDoorway" type="StaticBody3D" parent="Building"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -15.25)
-script = ExtResource("2_1i1me")
+script = ExtResource("2_2yv7c")
 shape = 5
 size = Vector3(3, 5, 0.5)
-material = ExtResource("4_wtrat")
+material = ExtResource("4_mbg04")
 grapple_anchor = false
 opening = Vector2(1.4, 2.4)
 sill = 1.0
@@ -127,10 +127,10 @@ roughness = 0.3
 
 [node name="VaultRoof" type="StaticBody3D" parent="Building"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, -17.5)
-script = ExtResource("2_1i1me")
+script = ExtResource("2_2yv7c")
 shape = 0
 size = Vector3(6, 0.4, 4)
-material = ExtResource("5_w45ha")
+material = ExtResource("5_jontx")
 grapple_anchor = false
 opening = Vector2(1.6, 2.6)
 sill = 1.0
@@ -141,10 +141,10 @@ roughness = 0.3
 
 [node name="StaticBody3D6" type="StaticBody3D" parent="Building"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.25, 0, -17.5)
-script = ExtResource("2_1i1me")
+script = ExtResource("2_2yv7c")
 shape = 0
 size = Vector3(0.5, 5, 4)
-material = ExtResource("4_wtrat")
+material = ExtResource("4_mbg04")
 grapple_anchor = false
 opening = Vector2(1.6, 2.6)
 sill = 1.0
@@ -155,10 +155,10 @@ roughness = 0.3
 
 [node name="StaticBody3D7" type="StaticBody3D" parent="Building"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.25, 0, -17.5)
-script = ExtResource("2_1i1me")
+script = ExtResource("2_2yv7c")
 shape = 0
 size = Vector3(0.5, 5, 4)
-material = ExtResource("4_wtrat")
+material = ExtResource("4_mbg04")
 grapple_anchor = false
 opening = Vector2(1.6, 2.6)
 sill = 1.0
@@ -169,10 +169,10 @@ roughness = 0.3
 
 [node name="StaticBody3D8" type="StaticBody3D" parent="Building"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -19.75)
-script = ExtResource("2_1i1me")
+script = ExtResource("2_2yv7c")
 shape = 0
 size = Vector3(7, 5, 0.5)
-material = ExtResource("4_wtrat")
+material = ExtResource("4_mbg04")
 grapple_anchor = false
 opening = Vector2(1.6, 2.6)
 sill = 1.0
@@ -183,10 +183,10 @@ roughness = 0.3
 
 [node name="Crates" type="StaticBody3D" parent="Building"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, -3)
-script = ExtResource("2_1i1me")
+script = ExtResource("2_2yv7c")
 shape = 0
 size = Vector3(1.4, 1.4, 1.4)
-material = ExtResource("6_lsya8")
+material = ExtResource("6_rj6si")
 grapple_anchor = false
 opening = Vector2(1.6, 2.6)
 sill = 1.0
@@ -197,7 +197,7 @@ roughness = 0.3
 
 [node name="Flammable" type="Node3D" parent="Building/Crates"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, 0)
-script = ExtResource("7_0xev0")
+script = ExtResource("7_6d2sk")
 burn_time = 15.0
 destroy_parent = false
 spread_radius = 2.5
@@ -212,10 +212,10 @@ reach_radius = 0.8
 
 [node name="Straw" type="StaticBody3D" parent="Building"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, -3)
-script = ExtResource("2_1i1me")
+script = ExtResource("2_2yv7c")
 shape = 0
 size = Vector3(2.2, 0.5, 1.6)
-material = ExtResource("6_lsya8")
+material = ExtResource("6_rj6si")
 grapple_anchor = false
 opening = Vector2(1.6, 2.6)
 sill = 1.0
@@ -226,7 +226,7 @@ roughness = 0.3
 
 [node name="Flammable" type="Node3D" parent="Building/Straw"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
-script = ExtResource("7_0xev0")
+script = ExtResource("7_6d2sk")
 burn_time = 20.0
 destroy_parent = false
 spread_radius = 2.5
@@ -241,10 +241,10 @@ reach_radius = 0.8
 
 [node name="StoneWall" type="StaticBody3D" parent="Building"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, -4)
-script = ExtResource("2_1i1me")
+script = ExtResource("2_2yv7c")
 shape = 0
 size = Vector3(6, 3, 0.6)
-material = ExtResource("4_wtrat")
+material = ExtResource("4_mbg04")
 grapple_anchor = false
 opening = Vector2(1.6, 2.6)
 sill = 1.0
@@ -255,10 +255,10 @@ roughness = 0.3
 
 [node name="TargetLedge" type="StaticBody3D" parent="Building"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, -11)
-script = ExtResource("2_1i1me")
+script = ExtResource("2_2yv7c")
 shape = 0
 size = Vector3(2.5, 4, 2.5)
-material = ExtResource("4_wtrat")
+material = ExtResource("4_mbg04")
 grapple_anchor = false
 opening = Vector2(1.6, 2.6)
 sill = 1.0
@@ -271,22 +271,22 @@ roughness = 0.3
 
 [node name="VaultGate" type="Node3D" parent="Gameplay"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -15.25)
-script = ExtResource("8_gm4ta")
+script = ExtResource("8_73u45")
 size = Vector2(1.3, 2.3)
 thickness = 0.1
 open_angle = 100.0
 swing_time = 0.6
 locked = true
-material = ExtResource("9_irano")
+material = ExtResource("9_yojr7")
 
 [node name="VaultPrize" type="StaticBody3D" parent="Gameplay"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -18)
-script = ExtResource("10_g4mnw")
+script = ExtResource("10_0xcwr")
 item_name = "a tarnished reliquary"
 
 [node name="LitTorch" type="Node3D" parent="Gameplay"]
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -12, 1.8, 2)
-script = ExtResource("11_odl2r")
+script = ExtResource("11_jtqh0")
 style = 0
 lit = true
 color = Color(1, 0.62, 0.3, 1)
@@ -299,7 +299,7 @@ can_extinguish = true
 
 [node name="UnlitTorch" type="Node3D" parent="Gameplay"]
 transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 12, 1.8, 2)
-script = ExtResource("11_odl2r")
+script = ExtResource("11_jtqh0")
 style = 0
 lit = false
 color = Color(1, 0.62, 0.3, 1)
@@ -312,32 +312,32 @@ can_extinguish = true
 
 [node name="HiddenDummy" type="StaticBody3D" parent="Gameplay"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, -5.5)
-script = ExtResource("12_v1o5q")
+script = ExtResource("12_x5jt5")
 max_health = 100.0
 respawn_time = 3.0
 
 [node name="Dummy" type="StaticBody3D" parent="Gameplay"]
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -7.5, 0, 0)
-script = ExtResource("12_v1o5q")
+script = ExtResource("12_x5jt5")
 max_health = 100.0
 respawn_time = 3.0
 
 [node name="HighDummy" type="StaticBody3D" parent="Gameplay"]
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 8, 4, -11)
-script = ExtResource("12_v1o5q")
+script = ExtResource("12_x5jt5")
 max_health = 100.0
 respawn_time = 3.0
 
 [node name="ArrowSwitch" type="StaticBody3D" parent="Gameplay"]
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -5, 3.6, -15)
-script = ExtResource("13_ax342")
+script = ExtResource("13_6o1fe")
 target = NodePath("../../Gameplay/VaultGate")
 one_shot = true
 plate_size = 0.6
 
 [node name="GuardTorch" type="Node3D" parent="Gameplay"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 0, -12.5)
-script = ExtResource("11_odl2r")
+script = ExtResource("11_jtqh0")
 style = 1
 lit = true
 color = Color(1, 0.62, 0.3, 1)
@@ -350,7 +350,7 @@ can_extinguish = true
 
 [node name="PlayerStart" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 12)
-script = ExtResource("14_6tw88")
+script = ExtResource("14_alawp")
 
 [node name="Signs" type="Node3D" parent="."]
 
@@ -423,7 +423,7 @@ outline_size = 10
 
 [node name="Warden" type="Node3D" parent="Enemies"]
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -1.5, 0, -12)
-script = ExtResource("15_nbey4")
+script = ExtResource("15_wm360")
 kind = "warden"
 health = 260.0
 damage = 38.0
