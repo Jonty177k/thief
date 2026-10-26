@@ -323,10 +323,23 @@ func _try_grab_ladder() -> void:
 		var from_above: bool = player.global_position.y > l.top_height() - 0.3
 		var falling_past := not player.is_on_floor()
 		if facing < -0.3 or ((from_above or falling_past) and facing > 0.3):
-			ladder = l
-			crouch_wanted = false
-			player.velocity = Vector3.ZERO
+			grab_ladder(l)
 			return
+
+
+## A ladder Jeffrey is next to and could grab with Interact, or null.
+func ladder_in_reach() -> Node3D:
+	if ladder or not player.can_climb():
+		return null
+	for l in ladders:
+		return l
+	return null
+
+
+func grab_ladder(l: Node3D) -> void:
+	ladder = l
+	crouch_wanted = false
+	player.velocity = Vector3.ZERO
 
 
 ## Which way "forward" on the stick climbs: up while looking at the ladder

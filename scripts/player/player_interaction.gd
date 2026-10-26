@@ -46,11 +46,20 @@ func physics_update(delta: float) -> void:
 			found = null
 	target = found
 	var text := ""
+	# Ladders: walking into one climbs it, but Interact grabs it too.
+	var climbable: Node3D = null if target else player.movement.ladder_in_reach()
 	if target and player.can_interact():
 		text = "[%s] %s" % [player.input.glyph("interact"), target.get_prompt()]
+	elif climbable:
+		text = "[%s] Climb" % player.input.glyph("interact")
+	elif player.movement.ladder:
+		text = "[%s] Let go" % player.input.glyph("jump")
 	if text != _prompt:
 		_prompt = text
 		prompt_changed.emit(text)
+	if climbable and player.input.interact_pressed:
+		player.movement.grab_ladder(climbable)
+		return
 	if target and player.input.interact_pressed and player.can_interact():
 		busy_timer = interact_time
 		var used_target := target

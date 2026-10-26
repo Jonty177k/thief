@@ -42,6 +42,8 @@ about it, including every tuning value, is in [docs/CONTROLLER.md](docs/CONTROLL
 | Rest menu: morning / evening | D-pad up / down | 1 / 2 |
 | Grappling hook (greybox slice only; bites **brown wood**) | R3 | G or middle mouse |
 | Debug readout | Options | F3 |
+| Fullscreen / window | | F11 |
+| Climb a ladder | walk into it, or Square | walk into it, or E |
 | Controls overlay | Create | H |
 | Debug: skip one hour | | T |
 | Free the mouse | | Esc |
@@ -131,7 +133,7 @@ godot --headless --path . res://tests/level_tools_test.tscn
 ```
 
 Each prints `PASS`/`FAIL` per check and exits non-zero on failure.
-The controller suite covers the spec's acceptance tests (64 checks), the
+The controller suite covers the spec's acceptance tests (77 checks), the
 smoke test the greybox slice (stealth, enemies, grapple routes, resting,
 reaching the tree), and the level tools suite every brush and palette piece
 plus a playthrough of `levels/example_camp.tscn`.
