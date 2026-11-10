@@ -3,7 +3,7 @@
 **Game Design Document — Version 0.2**
 
 - **Genre:** First-Person Stealth / Exploration / Immersive Sim
-- **Engine:** Unity 6 (moving from Godot; see [UNITY_PORT.md](UNITY_PORT.md))
+- **Engine:** Unity 6, rebuilt from scratch (the Unity project is in [`JeffreyUnity/`](../JeffreyUnity/README.md))
 - **Platform:** PC (Steam), with potential console ports
 - **Estimated Length:** 3–5 hours
 - **Visual Style:** Retro 3D dark fantasy, inspired by late-1990s PC games
@@ -16,15 +16,15 @@
   dungeons on the outskirts**, takes a **key** from each, and uses the
   three keys to enter the **tower at the centre** and climb to its top.
   The dungeons can be done in any order (section 5).
-- **Engine.** The game moves from Godot to Unity. The Godot build stays on
-  `main` as the reference for every system that has already been made to
-  feel right.
+- **Engine.** The game is rebuilt from scratch in Unity, starting with
+  movement and controls that match Thief 2 one to one. The Godot prototype
+  stays in the repository's history for reference but nothing is ported
+  from it.
 - **Item list.** The kit now follows the *Items / World Functionality*
   list: sword, rope arrows, water bombs, fire bombs and a glider, plus
   doors, fire, the light gem, surface noise, campfires, NPCs, merchants,
   guards, monsters, wildlife, ladders, elevators and vaulting (sections 3,
-  7 and 8). Where the list differs from what is built in Godot, section 7.7
-  says what carries over.
+  7 and 8). Section 7.7 compares it with what the Godot prototype had.
 
 ## 1. High Concept
 
@@ -131,23 +131,33 @@ Combat should be simple, responsive, and skill-based.
 
 ### Controller
 
-Jeffrey's first-person controller follows the *First-Person Controller
-Specification* that the Godot build was made to (Thief II-style grounded
-movement, hold-to-run, toggle crouch, a short directional dash, light and
-heavy sword attacks, a held shield, a context Interact button, DualSense or
-keyboard and mouse). The Unity controller is a port of it, with the same
-tuning values as the starting point. One change from the spec:
+Movement and controls are **Thief 2, one to one**: walk by default and
+hold Shift to run, toggle crouch, a short jump, hold Space at a ledge to
+mantle (this is also the vaulting on the item list), lean left, right and
+forward to peek, Alt as the "slide" modifier, and Thief's inventory,
+weapon and zoom keys. Keyboard and mouse.
 
-- **Vaulting is in.** The item list asks for vaulting to higher ledges, as
-  in Thief. Jump at a ledge up to about chest height and Jeffrey pulls
-  himself onto it. (The Godot build had no mantling.)
+| Action | Key |
+| --- | --- |
+| Run forward / move backward | W / S |
+| Strafe left / right | A / D |
+| Speed toggle | Shift |
+| Crouch | C |
+| Jump / mantle | Space |
+| Slide (movement modifier) | Alt |
+| Lean left / right | Q / E |
+| Lean forward | Alt + W |
+| Attack | Left mouse |
+| Block | B / middle mouse |
+| Use item / interact | Right mouse / Enter |
+| Drop item | R |
+| Next / previous inventory item | Tab / Shift + Tab |
+| Clear selected inventory item | Backspace |
+| Next / previous weapon | Numpad + / − |
+| Put away weapon | ~ |
+| Zoom in / out, reset zoom | ] / [, P |
 
-The rest of the spec stands: no stamina, no leaning, the shield blocks a
-120° cone and lets 15% of a blocked hit through, and resting at a campfire
-is done with Interact.
-
-Controls, tuning values and test results for the Godot version:
-[CONTROLLER.md](CONTROLLER.md).
+How it's built and every tuning value: [JeffreyUnity/README.md](../JeffreyUnity/README.md).
 
 ## 4. Core Gameplay Loop
 
@@ -346,8 +356,8 @@ stronger in direct combat. The kit follows the *Items* list.
 ### 7.1 Sword (and shield)
 
 Jeffrey's only real weapon: light and heavy attacks, Confessor-weak. The
-shield blocks a frontal cone. The Godot build's sword and shield combat is
-ported as it is ([COMBAT.md](COMBAT.md)).
+shield blocks a frontal cone. The Godot prototype's combat
+([COMBAT.md](COMBAT.md)) is a reference for the feel, rebuilt in Unity.
 
 ### 7.2 Rope Arrows
 
@@ -396,7 +406,7 @@ Thrown. A fire bomb bursts into flame.
 
 - Quick to throw, with a visible arc preview
 - Water and fire interact with the world consistently (the elemental
-  system from the Godot bow carries over)
+  system the Godot prototype's bow had is the model)
 - Limited supply, found in the world and bought from merchants
 
 ### 7.5 Glider
@@ -424,17 +434,19 @@ game richer but is never required (because the order is free). Proposals:
 - A quieter tread or a cloak (less visible)
 - Money for merchants
 
-### 7.7 What carries over from the Godot build
+### 7.7 Compared with the Godot prototype
 
-| Built in Godot | In 0.2 |
+Nothing is ported; everything is rebuilt in Unity. For reference:
+
+| In the Godot prototype | In 0.2 |
 | --- | --- |
-| Sword and shield combat, swordsman enemy | Ported as is |
+| Sword and shield combat, swordsman enemy | Rebuild |
 | Bow with plain, fire and water arrows | The bow becomes the rope-arrow bow. Fire and water become **bombs**; the elemental components (flammable, flames, extinguish) carry over unchanged |
 | Hookshot (hauls Jeffrey to wood) | Replaced by **rope arrows**. Its aiming, "will it bite" feedback and wood-only rule carry over |
 | Wire gun (walk a tightrope) | Parked. Not on the item list |
 | Grappling hook (greybox add-on) | Replaced by rope arrows |
-| Dash | Kept for combat dodging |
-| Light gem, noise events, ladders, doors, levers, campfires, day/night | Ported as is |
+| Dash | Cut: Thief 2 has no dash |
+| Light gem, noise events, ladders, doors, levers, campfires, day/night | Rebuild |
 | Feather Drop, Double Jump, Wing Flap (design only) | Cut. The glider covers falling; vaulting and rope arrows cover climbing |
 
 ## 8. Stealth System
@@ -628,7 +640,7 @@ Sparse, atmospheric music. Silence and environmental audio should dominate much 
 
 ## 12. GUI Level-Building Tools
 
-The game will be developed in Unity with AI-assisted programming. Unity already covers much of this section out of the box (Terrain tools, ProBuilder, Polybrush, grid snapping, prefabs, undo); the custom work is a placement palette for our gameplay pieces and the play-test buttons. See [UNITY_PORT.md](UNITY_PORT.md). Claude will help create the foundational systems and custom visual tools. The developer should be able to construct and modify environments without writing code for routine level-building tasks.
+The game will be developed in Unity with AI-assisted programming. Unity already covers much of this section out of the box (Terrain tools, ProBuilder, Polybrush, grid snapping, prefabs, undo); the custom work is a placement palette for our gameplay pieces and the play-test buttons. Claude will help create the foundational systems and custom visual tools. The developer should be able to construct and modify environments without writing code for routine level-building tasks.
 
 ### 12.1 Block-Based Level Editor
 
@@ -734,8 +746,7 @@ The developer should be able to launch directly into a level from the editor. Su
 - **Language:** C#
 - **Perspective:** First-person
 
-The port plan, package choices and the mapping from the Godot code are in
-[UNITY_PORT.md](UNITY_PORT.md).
+The Unity project is in [`JeffreyUnity/`](../JeffreyUnity/README.md).
 
 ### Core Systems
 
@@ -774,19 +785,16 @@ Prefer data-driven configuration (ScriptableObjects) for:
 
 ## 14. Development Roadmap
 
-The Godot build covered phases 1 to 4 of the old roadmap (controller,
-combat, bow and elements, hookshot) and the level tools. The Unity roadmap
-ports that work first, then builds the new structure. Full detail is in
-[UNITY_PORT.md](UNITY_PORT.md).
+The Unity build starts from scratch.
 
-1. **Unity project and controller.** Project setup, input, the controller with vaulting, the low-res look.
-2. **Combat.** Sword, shield, dash, the swordsman.
-3. **Tools.** Rope arrows, water and fire bombs, the elemental system, the glider.
-4. **Stealth.** Light gem, surface noise, guards on a NavMesh with Thief-style awareness.
-5. **World systems.** Day/night, campfires, doors and keys, elevators, saving, scene loading.
-6. **Level tools.** Unity's terrain and ProBuilder, plus a placement palette for our pieces.
-7. **Vertical slice.** One region of the outskirts and the first dungeon's entrance and first floor.
-8. **Content.** NPCs and merchants, wildlife and monsters, the three dungeons, the tower, the finale.
+1. **Movement and controls, Thief 2 one to one.** Walk, run, crouch, jump, mantle, slide, lean, zoom, and every key on the Thief 2 list wired up. A greybox test course. *(Started.)*
+2. **Combat.** Sword and block, Thief-style: quick slash and charged overhead.
+3. **Tools.** Rope arrows and climbable ropes, water and fire bombs, fire and water in the world, the glider.
+4. **Stealth.** Light gem, surface noise, guards with Thief-style awareness on a NavMesh.
+5. **World systems.** Day/night, campfires and resting, doors and keys, the tower gate, elevators, ladders, saving, scene loading.
+6. **Level tools.** Unity's Terrain and ProBuilder, plus a palette for our gameplay pieces.
+7. **Vertical slice.** One region of the outskirts and the entrance and first floor of one dungeon.
+8. **Content.** NPCs and merchants, monsters and wildlife, the three dungeons, the tower, the finale.
 
 **Success criterion for the slice:** a player unfamiliar with the project
 can cross part of the overworld, find a dungeon, get inside by more than

@@ -5,9 +5,9 @@ toward the glowing tree on its shoulder. You are weak, and you stay weak.
 
 > **Moving to Unity.** The design has changed to Elden Ring plus Thief: reach
 > three dungeons on the outskirts, take a key from each, and climb the tower at
-> the centre ([docs/GDD.md](docs/GDD.md) v0.2). The game is being ported to
-> Unity ([docs/UNITY_PORT.md](docs/UNITY_PORT.md)). This Godot build stays as
-> the reference for every system already built.
+> the centre ([docs/GDD.md](docs/GDD.md) v0.2). The game is being rebuilt from
+> scratch in Unity, in [`JeffreyUnity/`](JeffreyUnity/README.md), starting with
+> Thief 2 movement and controls. Everything below is the old Godot prototype.
 
 This is the **first playable greybox slice**, built in **Godot 4.3**
 (GDScript, no plugins). Everything is placeholder primitives with a
