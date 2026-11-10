@@ -1,31 +1,48 @@
 # JEFFREY BRINGS DEATH 2.0
 
-**Game Design Document — Version 0.1**
+**Game Design Document — Version 0.2**
 
 - **Genre:** First-Person Stealth / Exploration / Immersive Sim
-- **Engine:** Godot
+- **Engine:** Unity 6 (moving from Godot; see [UNITY_PORT.md](UNITY_PORT.md))
 - **Platform:** PC (Steam), with potential console ports
 - **Estimated Length:** 3–5 hours
 - **Visual Style:** Retro 3D dark fantasy, inspired by late-1990s PC games
 - **Development:** Solo developer with AI-assisted programming and custom visual level-building tools
 
+### What changed in 0.2
+
+- **Structure.** Elden Ring plus Thief. The game is no longer a straight
+  climb through four levels. Jeffrey crosses an open overworld to **three
+  dungeons on the outskirts**, takes a **key** from each, and uses the
+  three keys to enter the **tower at the centre** and climb to its top.
+  The dungeons can be done in any order (section 5).
+- **Engine.** The game moves from Godot to Unity. The Godot build stays on
+  `main` as the reference for every system that has already been made to
+  feel right.
+- **Item list.** The kit now follows the *Items / World Functionality*
+  list: sword, rope arrows, water bombs, fire bombs and a glider, plus
+  doors, fire, the light gem, surface noise, campfires, NPCs, merchants,
+  guards, monsters, wildlife, ladders, elevators and vaulting (sections 3,
+  7 and 8). Where the list differs from what is built in Godot, section 7.7
+  says what carries over.
+
 ## 1. High Concept
 
 Jeffrey Brings Death 2.0 is a first-person, open-world stealth adventure set on the back of an enormous living colossus.
 
-You play as Jeffrey, a physically weak peasant demon tasked with ascending the colossus toward an enormous glowing tree growing from its summit.
+You play as Jeffrey, a physically weak peasant demon. At the centre of the colossus's back stands a great **tower**, and from its top grows the enormous glowing tree that keeps the creature alive. The tower is sealed. Its gate needs **three keys**, and each key is kept in a **dungeon on the outskirts** of the colossus's back.
 
-The tree is visible from much of the world, providing a constant sense of direction and an ultimate destination.
+The tower and the tree are visible from almost everywhere, giving the player a constant sense of direction and an ultimate destination. The dungeons are what stand between Jeffrey and it.
 
-The colossus's body supports a strange civilization of prisons, underground settlements, cities, and aristocratic mansions. Its inhabitants have built their society around exploiting the creature that sustains them.
+The colossus's body supports a strange civilization of prisons, drowned settlements, cities, and aristocratic estates. Its inhabitants have built their society around exploiting the creature that sustains them.
 
-Jeffrey must navigate this dangerous world through exploration, stealth, climbing, and supernatural movement abilities.
+Jeffrey must navigate this dangerous world through exploration, stealth, climbing, and a handful of thief's tools.
 
 Enemies are overwhelmingly powerful. Combat is possible but dangerous, and Jeffrey never becomes significantly stronger.
 
-As Jeffrey ascends, he discovers that the aristocracy's pollution and exploitation are slowly killing the colossus.
+Along the way Jeffrey discovers that the aristocracy's pollution and exploitation are slowly killing the colossus.
 
-His journey culminates in a mansion constructed around the great tree itself.
+With three keys in hand he climbs the tower, built around the trunk of the great tree, to its top.
 
 Jeffrey kills the tree.
 The colossus dies.
@@ -35,10 +52,11 @@ The world ends.
 
 1. **Exploration and Discovery:** Players should constantly wonder whether a distant location is reachable and experiment with different routes.
 2. **Vulnerability:** Jeffrey is physically weak. Avoiding enemies is usually preferable to fighting them.
-3. **Verticality:** Climbing, descending, grappling, and discovering elevated pathways define traversal.
-4. **Player Ingenuity:** Abilities should interact with environments in multiple ways, encouraging experimentation.
+3. **Verticality:** Climbing, descending, rope arrows, gliding, and discovering elevated pathways define traversal.
+4. **Player Ingenuity:** Tools should interact with environments in multiple ways, encouraging experimentation.
 5. **Atmosphere:** Lighting, sound, architecture, and environmental storytelling create an unsettling fantasy world.
 6. **Compact Design:** A short, interconnected adventure with carefully constructed levels and minimal filler.
+7. **Player's Choice of Order:** The three dungeons can be tackled in any order, Elden Ring style. The overworld is the hub that connects them.
 
 ## 2. Inspirations
 
@@ -55,7 +73,7 @@ Specific references:
 
 ### Elden Ring
 
-Primary inspiration for the overworld.
+Primary inspiration for the overworld and the structure: an open world with major locations you can take on in any order, and a central goal they unlock.
 
 - A distant, visible destination
 - Dangerous enemies that encourage avoidance
@@ -69,9 +87,9 @@ Primary inspiration for the overworld.
 
 Inspiration for the setting and scale. The entire playable world exists on the body of an enormous creature.
 
-### Metroid Prime
+### Zelda: Breath of the Wild
 
-Inspiration for movement progression. New abilities expand the player's traversal options and encourage revisiting previously inaccessible areas.
+Inspiration for the glider: climbing high and drifting far is a way of seeing and crossing the world.
 
 ## 3. Player Character
 
@@ -82,8 +100,10 @@ Jeffrey is a peasant demon. He is small, physically vulnerable, and poorly equip
 ### Starting Equipment
 
 - Sword
-- Shield
-- Basic movement abilities
+- Shield (not on the new item list; kept for now, see question 1 in section 16)
+- Rope arrows
+- A few water bombs and fire bombs
+- Basic movement: walk, run, crouch, jump, vault, climb ladders
 
 ### Combat Philosophy
 
@@ -103,7 +123,7 @@ However:
 - Jeffrey does not gain substantial health or damage upgrades.
 - Player combat skill improves through practice.
 
-Progression primarily comes from unlocking movement and magic abilities rather than increasing character statistics.
+Progression comes from tools and knowledge of the world, not from character statistics.
 
 Combat should be simple, responsive, and skill-based.
 
@@ -111,31 +131,35 @@ Combat should be simple, responsive, and skill-based.
 
 ### Controller
 
-Jeffrey's first-person controller follows the separate *First-Person
-Controller Specification*: Thief II-style grounded movement, hold-to-run,
-toggle crouch, a short directional dash, light and heavy sword attacks, a
-held shield and a context Interact button, on a DualSense or keyboard and
-mouse. Where that spec and this document differ, the spec wins for now:
+Jeffrey's first-person controller follows the *First-Person Controller
+Specification* that the Godot build was made to (Thief II-style grounded
+movement, hold-to-run, toggle crouch, a short directional dash, light and
+heavy sword attacks, a held shield, a context Interact button, DualSense or
+keyboard and mouse). The Unity controller is a port of it, with the same
+tuning values as the starting point. One change from the spec:
 
-- No stamina. Running, attacking and blocking cost nothing.
-- No mantling (jumping onto chest-high ledges). The Hookshot (7.3) still
-  pulls Jeffrey up onto a ledge.
-- No leaning.
-- The shield blocks a 120° cone in front and lets 15% of a blocked hit through.
-- Resting at a campfire is done with Interact.
+- **Vaulting is in.** The item list asks for vaulting to higher ledges, as
+  in Thief. Jump at a ledge up to about chest height and Jeffrey pulls
+  himself onto it. (The Godot build had no mantling.)
 
-Controls, tuning values and test results: [CONTROLLER.md](CONTROLLER.md).
+The rest of the spec stands: no stamina, no leaning, the shield blocks a
+120° cone and lets 15% of a blocked hit through, and resting at a campfire
+is done with Interact.
+
+Controls, tuning values and test results for the Godot version:
+[CONTROLLER.md](CONTROLLER.md).
 
 ## 4. Core Gameplay Loop
 
 1. Rest at a campfire to heal and choose the time of day.
-2. Observe the surrounding environment and identify possible routes toward the tree.
-3. Explore pathways, ruins, buildings, and dangerous wilderness.
-4. Avoid or carefully engage enemies.
-5. Use mobility abilities to overcome obstacles and discover shortcuts.
-6. Find new campfires, secrets, and entrances to major levels.
-7. Complete major levels to unlock new abilities and access higher regions of the colossus.
-8. Return to the overworld and continue ascending.
+2. Look out over the colossus. Pick a dungeon to go after, or a landmark to investigate.
+3. Explore pathways, ruins, villages, and dangerous wilderness to find a way there.
+4. Avoid or carefully engage enemies. Talk to NPCs, and trade with merchants for bombs and arrows.
+5. Use rope arrows, bombs, and the glider to overcome obstacles and discover shortcuts.
+6. Find new campfires, secrets, and dungeon entrances.
+7. Infiltrate a dungeon Thief-style and steal its key.
+8. Return to the overworld. Repeat until Jeffrey has all three keys.
+9. Open the tower and climb it.
 
 ### Exploration Philosophy
 
@@ -145,106 +169,114 @@ The player should frequently experience:
 - "What's behind that building?"
 - "Can I sneak around these enemies?"
 - "Does this path connect to somewhere I've already been?"
+- "Which dungeon should I try next?"
 
 The world should reward curiosity and spatial reasoning.
 
 ## 5. World Structure
 
-The world consists of interconnected open environments punctuated by large, carefully designed immersive-sim levels.
+**Elden Ring plus Thief.** One open overworld on the colossus's back,
+three Thief-style dungeons on its outskirts, and one tower at its centre.
 
-### Overall Progression
+```
+                  [ Dungeon 2: The Sunken City ]
+                       (the flank, low and wet)
+                                 |
+   [ Dungeon 1: The Prison ] — OVERWORLD — [ Dungeon 3: The Aristocrats' Quarter ]
+     (the tail / haunch)          |            (the shoulder, polluted)
+                                  |
+                     THE TOWER, at the centre
+               (three locks on its gate; the tree at its top)
+```
 
-#### Area 1 — Lower Colossus Overworld
+### The Overworld
 
-The player begins near the lower regions of the creature. The enormous glowing tree is visible far above.
+A single compact, dense open region covering the colossus's back. The
+tower is in the middle of it and visible from everywhere. The three
+dungeons sit near its edges, roughly equal distances from the starting
+point, so the player picks a direction rather than following one.
 
 Features:
 
-- Winding paths
-- Ruined settlements
-- Dangerous enemies
-- Cliffs and vertical obstacles
+- Winding paths and several routes to each dungeon
+- Ruined settlements, villages with NPCs and merchants
+- Guards on the roads, monsters in the wilds, wildlife
+- Cliffs, chasms and vertical obstacles to rope-arrow up or glide down
 - Campfires
-- Hidden shortcuts
-- Multiple possible approaches
+- Hidden shortcuts that connect the outskirts to each other
+- The tower's sealed gate, seen early, so the player knows what the keys are for
 
-Paths eventually funnel toward the first major levels.
+The overworld changes between day and night (section 6). Each region of the
+outskirts has its own look, so the player always knows roughly where they are.
 
-#### Level 1 — The Prison
+### The Three Dungeons
+
+Each dungeon is a large, carefully designed immersive-sim level in the
+spirit of a Thief mission. Each has several ways in, a key hidden deep
+inside, and a way back out to the overworld (often a shortcut that opens
+from the inside).
+
+They can be done **in any order**. That means:
+
+- Every dungeon must be completable with the **starting kit**.
+- Tools found in one dungeon (section 7.5) make the others easier or open
+  optional routes, but are never required.
+- Enemy difficulty is set by where you are and the time of day, not by how
+  many keys you have.
+
+#### Dungeon 1 — The Prison
 
 *Inspiration: Cragscleft Prison, Thief: The Dark Project*
 
-A large, oppressive prison built into the colossus.
+A large, oppressive prison built into the colossus's haunch.
 
-Gameplay emphasis:
+- Traditional stealth: guard patrols, dark corridors, cell blocks
+- Vertical shafts and a mine or quarry cut into the creature
+- Keys, switches, lifts, and environmental puzzles
+- Multiple infiltration routes: the front gate, the mine, the roofs
+- The key: held by the warden, or in his office
 
-- Traditional stealth
-- Guard patrols
-- Dark corridors
-- Vertical shafts
-- Multiple infiltration routes
-- Keys, switches, and environmental puzzles
-
-The player must navigate the prison and discover a route farther into the colossus.
-
-#### Level 2 — The Underground City
+#### Dungeon 2 — The Sunken City
 
 *Inspiration: The Lost City, Thief: The Dark Project*
 
-A supernatural underground environment buried within the creature.
+A supernatural drowned city in a hollow of the colossus's flank.
 
-Features:
+- Ancient architecture, caverns, flooded streets
+- Unnatural lighting and strange creatures rather than guards
+- Hidden pathways, environmental hazards, extensive vertical exploration
+- Fire and water matter more here than anywhere else
+- Mysterious and disorienting
+- The key: on an altar or in a sealed vault at the bottom of the city
 
-- Ancient architecture
-- Caverns
-- Unnatural lighting
-- Strange creatures
-- Hidden pathways
-- Environmental hazards
-- Extensive vertical exploration
-
-The level should feel mysterious and disorienting. After escaping, Jeffrey emerges into a higher region of the overworld.
-
-#### Area 2 — Upper Colossus Overworld
-
-A new open region with greater elevation, increasingly strange architecture, and more dangerous enemies.
-
-The player has acquired new traversal abilities, enabling more sophisticated navigation. Previously impossible routes become accessible.
-
-#### Level 3 — The Aristocratic City
+#### Dungeon 3 — The Aristocrats' Quarter
 
 *Inspiration: Life of the Party, Thief II*
 
-A dense, vertical city built into the upper reaches of the colossus. The player navigates rooftops, balconies, bridges, interiors, and elevated walkways.
+A dense, vertical district of estates on the colossus's shoulder, where
+the aristocracy hold a party while their chimneys poison the creature.
 
-The city reveals the central environmental conflict: the aristocracy's industry and pollution are poisoning the colossus.
+- Rooftop traversal, balconies, bridges, elevated walkways
+- Guarded estates and wealthy interiors
+- Industrial infrastructure pumping pollution into the colossus
+- Reveals the central conflict: the aristocracy's industry is killing the colossus
+- The key: in a lord's vault, or worn by the host of the party
 
-Features:
+### The Tower
 
-- Rooftop traversal
-- Guarded estates
-- Wealthy residences
-- Industrial infrastructure
-- Environmental storytelling
-- Multiple infiltration routes
+*Inspiration: the old Tree Mansion level*
 
-This level leads toward the final mansion.
+An aristocratic tower at the centre of the colossus's back, built around
+the trunk of the great tree. Its gate has three locks. With the three keys
+Jeffrey opens it and climbs.
 
-#### Level 4 — The Tree Mansion
+- Complex vertical traversal, inside and out
+- Advanced stealth, with the hardest guards in the game
+- Everything the player has learned comes together
+- Roots and branches grow through the architecture
+- At the top, in the crown of the tree, its vital structure
 
-A grand aristocratic mansion physically constructed around the enormous tree that sustains the colossus. The architecture is intertwined with massive roots, branches, and organic structures.
-
-The mansion is the final major level.
-
-Gameplay emphasis:
-
-- Complex vertical traversal
-- Advanced stealth
-- Combining previously acquired abilities
-- Interconnected rooms and passages
-- Reaching the tree's vital structure
-
-#### Finale — Death of the Colossus
+### Finale — Death of the Colossus
 
 Jeffrey kills the tree.
 The colossus begins dying.
@@ -252,6 +284,14 @@ The world collapses.
 The game ends.
 
 Final sequence details remain to be designed.
+
+### Story Flow
+
+Because the dungeons can be done in any order, the story is told in the
+world rather than in a fixed sequence: NPCs, notes, and what Jeffrey sees.
+Each dungeon shows a different face of the aristocracy's rot (who they
+lock up, what they drowned, what they burn). By the third key the player
+understands why the tree has to die.
 
 ## 6. Day / Night System
 
@@ -298,132 +338,104 @@ Campfires should be distributed throughout the overworld and major levels.
 
 **Design intention:** Choosing when to explore is a meaningful strategic decision.
 
-## 7. Player Abilities and Upgrades
+## 7. Player Tools and Upgrades
 
-Abilities are acquired progressively throughout the adventure. They expand the player's options without making Jeffrey substantially stronger in direct combat.
+Tools expand the player's options without making Jeffrey substantially
+stronger in direct combat. The kit follows the *Items* list.
 
-### 7.1 Bow and Arrow
+### 7.1 Sword (and shield)
 
-A versatile ranged weapon and environmental tool.
+Jeffrey's only real weapon: light and heavy attacks, Confessor-weak. The
+shield blocks a frontal cone. The Godot build's sword and shield combat is
+ported as it is ([COMBAT.md](COMBAT.md)).
 
-**Standard Arrow**
+### 7.2 Rope Arrows
 
-- Deals ranged damage
-- Can distract enemies through impact sounds
-- Allows attacks from a distance
+*Inspiration: the rope arrow, Thief*
 
-**Water-Fused Arrow**
+Fired from a short bow. A rope arrow that hits **wood** sticks and drops a
+climbable rope to the ground. Jeffrey can climb up and down it, and pull
+the arrow back out at the top or bottom to reuse it. Stone, metal and
+flesh don't take it.
 
-- Extinguishes torches and flames
-- Creates darkness for stealth
-- Allows players to manipulate lighting
-
-**Fire-Fused Arrow**
-
-- Ignites flammable surfaces and objects
-- Can illuminate dark spaces
-- Can create environmental hazards
-
-**Design Requirements**
-
-- The bow should be responsive and simple to operate.
-- Arrow fusion should be accessible through a quick selection interface.
-- Water and fire interactions should work consistently with environmental objects.
-- The system should reward experimentation without requiring complicated crafting menus.
-
-### 7.2 Feather Drop
-
-A supernatural ability allowing Jeffrey to survive falls from enormous heights.
-
-**Activation:** Hold the Run button while falling.
-
-**Behavior**
-
-- Slows or magically cushions the fall
-- Prevents or significantly reduces fall damage
-- Produces a bright flash of light
-- Creates a loud sound
-
-**Stealth Tradeoff:** Feather Drop attracts nearby enemies. It is excellent for exploration and emergency descent but dangerous during stealth encounters.
-
-**Design Purpose:** Enables large vertical drops and new descending routes without eliminating the importance of stealth.
-
-### 7.3 Hookshot / Wire Gun
-
-A multifunctional traversal tool. This is one of the game's most important mechanics.
-
-**Mode A — Hookshot**
-
-The player fires a hook toward a valid attachment point. Jeffrey is rapidly pulled toward the attachment point, similar to Link's hookshot.
+Rope arrows are quicker than Thief's: the arrow flies fast and flat, and
+climbing is brisk.
 
 Uses:
 
-- Scaling buildings
-- Crossing gaps
-- Reaching ledges
-- Escaping dangerous situations
-- Navigating vertical environments
+- Scaling walls, cliffs and buildings
+- Reaching balconies and rooftops
+- Climbing down into shafts and pits
+- Escaping pursuit
 
-**Mode B — Wire Placement**
+**Design requirements**
 
-The player fires a wire toward a distant attachment point. The other end can be secured to a nearby surface. This creates a traversable wire between two locations. Jeffrey can climb onto the wire and carefully walk across it.
+- Readable wood: players must be able to tell what will take an arrow
+- Clear aim feedback (will it stick?)
+- Rope length limited, so not every height is reachable from the ground
+- A small supply, recoverable, with spares from merchants
 
-Uses:
+### 7.3 Water Bombs
 
-- Crossing courtyards silently
-- Moving between rooftops
-- Avoiding enemies below
-- Creating alternative infiltration routes
-- Bypassing dangerous terrain
+Thrown, not fired. A water bomb bursts in a splash.
 
-**Design Philosophy:** The hookshot emphasizes fast movement. The wire emphasizes careful, deliberate traversal. The player chooses the appropriate approach depending on the situation.
+- Puts out torches and fires in the splash, creating darkness for stealth
+- Puts out a burning enemy, or Jeffrey
+- Makes a noise where it lands, so it doubles as a distraction
 
-**Technical Requirements**
+### 7.4 Fire Bombs
 
-- Reliable attachment detection
-- Visible attachment feedback
-- Configurable maximum range
-- Rope or wire rendering
-- Collision-safe player movement
-- Smooth transitions between ground and wire
-- Clear feedback when an attachment is invalid
+Thrown. A fire bomb bursts into flame.
 
-### 7.4 Double Jump
+- Sets wood, hay, cloth and some enemies alight; fire spreads
+- Lights torches and braziers (useful for seeing, bad for hiding)
+- Damages and scatters enemies; a dangerous last resort in a fight
+- Loud and bright
 
-A second jump performed while airborne. *Inspiration: Metroid Prime*
+**Bomb design requirements**
 
-**Behavior**
+- Quick to throw, with a visible arc preview
+- Water and fire interact with the world consistently (the elemental
+  system from the Godot bow carries over)
+- Limited supply, found in the world and bought from merchants
 
-- Enables additional height and distance
-- Improves precision platforming
-- Allows access to elevated routes
-- Can be combined with other traversal abilities
+### 7.5 Glider
 
-**Stealth Characteristics:** Relatively quiet. Double Jump should be the preferred option for controlled, precise vertical movement.
+*Inspiration: the paraglider, Zelda: Breath of the Wild*
 
-**Acquisition:** Obtained during the mansion portion of the aristocratic city / Life of the Party-inspired sequence.
+Open the glider in mid-air to drift down and forward instead of falling.
 
-### 7.5 Wing Flap
+- Survive big drops; cross gaps from high to low
+- Reach places across chasms from cliff tops and towers
+- Combines with rope arrows: climb high, then glide far
+- Visible in daylight, so gliding over guards by day is risky
 
-Jeffrey uses his demonic wings to launch himself high into the air.
+**Acquisition (proposal):** found early in the overworld, on the way to
+whichever dungeon the player reaches first, so it is part of the kit for
+all three. Alternatively, a dungeon reward (see below).
 
-**Behavior**
+### 7.6 Dungeon Rewards
 
-- Provides a powerful vertical boost
-- Reaches significantly greater heights than Double Jump
-- Enables access to high ledges and structures
-- Can be combined with Hookshot movement
+Each dungeon gives its **key**, plus a reward that makes the rest of the
+game richer but is never required (because the order is free). Proposals:
 
-**Stealth Tradeoff:** Wing Flap produces a very loud noise. Nearby enemies are alerted.
+- More rope or rope-arrow capacity
+- A bomb satchel (carry more bombs)
+- A quieter tread or a cloak (less visible)
+- Money for merchants
 
-**Design Purpose:** Provides an exciting, powerful movement option while preserving the importance of stealth.
+### 7.7 What carries over from the Godot build
 
-**Double Jump vs. Wing Flap**
-
-- Double Jump: Quiet, precise, limited height.
-- Wing Flap: Loud, powerful, substantial vertical height.
-
-Both should remain useful throughout the game.
+| Built in Godot | In 0.2 |
+| --- | --- |
+| Sword and shield combat, swordsman enemy | Ported as is |
+| Bow with plain, fire and water arrows | The bow becomes the rope-arrow bow. Fire and water become **bombs**; the elemental components (flammable, flames, extinguish) carry over unchanged |
+| Hookshot (hauls Jeffrey to wood) | Replaced by **rope arrows**. Its aiming, "will it bite" feedback and wood-only rule carry over |
+| Wire gun (walk a tightrope) | Parked. Not on the item list |
+| Grappling hook (greybox add-on) | Replaced by rope arrows |
+| Dash | Kept for combat dodging |
+| Light gem, noise events, ladders, doors, levers, campfires, day/night | Ported as is |
+| Feather Drop, Double Jump, Wing Flap (design only) | Cut. The glider covers falling; vaulting and rope arrows cover climbing |
 
 ## 8. Stealth System
 
@@ -439,7 +451,7 @@ Enemy detection depends on:
 - Player movement
 - Environmental cover
 
-Darkness should meaningfully reduce detection.
+Darkness should meaningfully reduce detection. A **light gem** on the HUD shows how visible Jeffrey is, as in Thief.
 
 ### Sound
 
@@ -450,10 +462,10 @@ Enemies respond to sound generated by:
 - Jumping and landing
 - Weapons
 - Environmental objects
-- Feather Drop
-- Wing Flap
+- Bombs bursting
+- Doors, elevators and ladders
 
-Different surfaces may produce different amounts of noise.
+Different surfaces produce different amounts of noise, as in Thief: stone and metal are loud, carpet, grass and moss are quiet, water splashes. Players should be able to plan a quiet route by reading the floor.
 
 ### Enemy Awareness
 
@@ -467,6 +479,12 @@ Suggested states:
 6. Returning to patrol
 
 Enemies should investigate disturbances and communicate threats when appropriate.
+
+### Enemy Types
+
+- **Guards**, modelled on the Builders' guards in Thief: human, patrol, talk, carry torches, raise alarms.
+- **Monsters**, modelled on Elden Ring: fantasy creatures in the wilds and the Sunken City, stronger at night.
+- **Wildlife**, mostly harmless, but it can startle and give Jeffrey away.
 
 ### Stealth Philosophy
 
@@ -507,17 +525,17 @@ Every major environment should use height as an important gameplay dimension. Ex
 Players should be able to recognize:
 
 - Climbable surfaces
-- Hookshot attachment points
-- Wire attachment locations
+- Wood that takes a rope arrow
+- Places to glide from and to
 - Accessible ledges
 - Dangerous falls
 - Concealed routes
 
 Visual language should remain consistent.
 
-### Ability-Based Exploration
+### Tool-Based Exploration
 
-New movement abilities should unlock alternative paths through existing environments. Revisiting earlier locations should reveal new opportunities.
+Rope arrows, bombs and the glider should each open alternative paths. Dungeon rewards should reveal new opportunities in places the player has already been.
 
 ### Open World Scope
 
@@ -610,7 +628,7 @@ Sparse, atmospheric music. Silence and environmental audio should dominate much 
 
 ## 12. GUI Level-Building Tools
 
-The game will be developed in Godot with AI-assisted programming. Claude will help create the foundational systems and custom visual tools. The developer should be able to construct and modify environments without writing code for routine level-building tasks.
+The game will be developed in Unity with AI-assisted programming. Unity already covers much of this section out of the box (Terrain tools, ProBuilder, Polybrush, grid snapping, prefabs, undo); the custom work is a placement palette for our gameplay pieces and the play-test buttons. See [UNITY_PORT.md](UNITY_PORT.md). Claude will help create the foundational systems and custom visual tools. The developer should be able to construct and modify environments without writing code for routine level-building tasks.
 
 ### 12.1 Block-Based Level Editor
 
@@ -689,9 +707,11 @@ Drag-and-drop objects:
 - Keys
 - Switches
 - Torches
-- Hookshot anchors
-- Wire attachment surfaces
-- Ability pickups
+- Rope-arrow wood surfaces
+- Dungeon keys and the tower gate
+- Elevators
+- NPCs and merchants
+- Tool pickups
 - Checkpoints
 - Environmental hazards
 
@@ -706,154 +726,71 @@ The developer should be able to launch directly into a level from the editor. Su
 - Display traversal attachment points
 - Adjust gameplay values without changing code
 
-**Development goal:** Claude builds reusable gameplay systems and editor functionality. The developer handles world construction, level design, visual direction, and gameplay tuning through Godot's GUI.
+**Development goal:** Claude builds reusable gameplay systems and editor functionality. The developer handles world construction, level design, visual direction, and gameplay tuning through Unity's editor.
 
 ## 13. Technical Architecture
 
-- **Engine:** Godot 4.x
+- **Engine:** Unity 6 LTS, Universal Render Pipeline
+- **Language:** C#
 - **Perspective:** First-person
+
+The port plan, package choices and the mapping from the Godot code are in
+[UNITY_PORT.md](UNITY_PORT.md).
 
 ### Core Systems
 
-1. First-person character controller
+1. First-person character controller, with vaulting
 2. Sword and shield combat
-3. Enemy AI and patrols
-4. Visibility-based stealth
-5. Sound detection
+3. Enemy AI and patrols on a NavMesh (guards, monsters, wildlife)
+4. Light gem and visibility-based stealth
+5. Sound detection, with different surface noises
 6. Day/night cycle
 7. Campfire checkpoints
-8. Bow and arrow system
-9. Elemental arrow fusion
-10. Feather Drop
-11. Hookshot and wire traversal
-12. Double Jump
-13. Wing Flap
-14. Ability acquisition
-15. Save/load system
-16. Level transitions
-17. Modular environment tools
+8. Rope arrows
+9. Water and fire bombs, and the fire/water elemental system
+10. Glider
+11. Doors, keys, levers, ladders, elevators
+12. NPC talk and merchants
+13. Keys and the tower gate
+14. Save/load system
+15. Overworld and dungeon scene loading
+16. Level-building tools
 
 ### Implementation Principles
 
-- Systems should be modular and reusable.
-- Gameplay variables should be exposed through Godot's Inspector or custom editor interfaces.
+- Systems should be modular and reusable components.
+- Gameplay values are exposed in the Inspector (serialized fields) or in ScriptableObject assets.
 - Avoid hardcoding level-specific behavior into general gameplay systems.
 
-Prefer data-driven configuration for:
+Prefer data-driven configuration (ScriptableObjects) for:
 
 - Enemy properties
-- Ability parameters
+- Tool parameters
 - Lighting
-- Sound intensity
+- Sound intensity and surface noise
 - Traversal distances
 - Damage
-- Cooldowns
+- Merchant stock and prices
 
-## 14. Prototype Development Roadmap
+## 14. Development Roadmap
 
-### Phase 1 — Core Movement
+The Godot build covered phases 1 to 4 of the old roadmap (controller,
+combat, bow and elements, hookshot) and the level tools. The Unity roadmap
+ports that work first, then builds the new structure. Full detail is in
+[UNITY_PORT.md](UNITY_PORT.md).
 
-Build a playable first-person controller. Implement:
+1. **Unity project and controller.** Project setup, input, the controller with vaulting, the low-res look.
+2. **Combat.** Sword, shield, dash, the swordsman.
+3. **Tools.** Rope arrows, water and fire bombs, the elemental system, the glider.
+4. **Stealth.** Light gem, surface noise, guards on a NavMesh with Thief-style awareness.
+5. **World systems.** Day/night, campfires, doors and keys, elevators, saving, scene loading.
+6. **Level tools.** Unity's terrain and ProBuilder, plus a placement palette for our pieces.
+7. **Vertical slice.** One region of the outskirts and the first dungeon's entrance and first floor.
+8. **Content.** NPCs and merchants, wildlife and monsters, the three dungeons, the tower, the finale.
 
-- Walking
-- Running
-- Jumping
-- Crouching
-- Basic collision
-- Camera controls
-
-Create a small blockout environment.
-
-**Success criterion:** Moving through the environment feels responsive and satisfying.
-
-### Phase 2 — Traversal Abilities
-
-Implement:
-
-- Feather Drop
-- Hookshot
-- Wire placement and traversal
-- Double Jump
-- Wing Flap
-
-Create a vertical obstacle course to test every ability.
-
-**Success criterion:** Traversal is reliable, intuitive, and enjoyable.
-
-### Phase 3 — Stealth
-
-Implement:
-
-- Basic enemy AI
-- Patrol routes
-- Vision detection
-- Hearing detection
-- Suspicion states
-- Enemy searching behavior
-
-Create a small guarded courtyard.
-
-**Success criterion:** Players can infiltrate the courtyard using multiple routes and abilities.
-
-### Phase 4 — Combat and Bow
-
-Implement:
-
-- Sword attacks
-- Shield blocking
-- Enemy melee attacks
-- Damage and death
-- Bow and arrow
-- Fire arrows
-- Water arrows
-- Torch extinguishing
-
-**Success criterion:** Combat feels responsive, and elemental arrows meaningfully affect stealth.
-
-### Phase 5 — World Systems
-
-Implement:
-
-- Day/night cycle
-- Campfires
-- Resting
-- Checkpoints
-- Saving and loading
-- Ability acquisition
-
-**Success criterion:** A short playable adventure loop works from beginning to end.
-
-### Phase 6 — Visual Development Tools
-
-Build or configure:
-
-- Modular block placement
-- Terrain editing
-- Lighting tools
-- Enemy placement
-- Patrol editing
-- Gameplay object placement
-- Prefab library
-
-**Success criterion:** The developer can create a new playable area primarily through GUI tools.
-
-### Phase 7 — Vertical Slice
-
-Construct one polished, interconnected environment demonstrating:
-
-- Open exploration
-- Vertical movement
-- Stealth
-- Combat
-- Environmental interactions
-- Campfire resting
-- Day/night changes
-- Multiple routes
-- A meaningful destination
-
-This should be a small, representative section of the finished game.
-
-**Success criterion:** The prototype demonstrates the game's unique appeal and can be tested by players unfamiliar with the project.
+**Success criterion for the slice:** a player unfamiliar with the project
+can cross part of the overworld, find a dungeon, get inside by more than
+one route, and get out with a key.
 
 ## 15. Scope and Commercial Goals
 
@@ -888,7 +825,7 @@ Highest priority:
 - Movement quality
 - Stealth
 - Level design
-- Hookshot/wire gun
+- Rope arrows and the glider
 - Atmosphere
 - Environmental exploration
 
@@ -911,30 +848,31 @@ Avoid unless necessary:
 
 ## 16. Open Design Questions
 
-These decisions should be resolved through prototyping.
+These decisions should be resolved through prototyping or by the designer.
 
-1. Can the hookshot attach to any suitable surface, or only designated materials?
-2. Can wires be placed freely between arbitrary surfaces?
-3. Does Wing Flap have a cooldown or other limitation?
-4. Does Feather Drop consume a resource?
-5. Are arrows limited by ammunition?
-6. Can the player return freely to earlier regions?
-7. Does the day/night cycle advance automatically as well as through resting?
-8. How does Jeffrey acquire each upgrade?
-9. What motivates Jeffrey to kill the tree?
-10. Is the final destruction interactive, cinematic, or a combination?
-11. Does the colossus physically move during gameplay?
-12. How much optional exploration is appropriate for a four-hour experience?
+1. Does Jeffrey keep the shield? It isn't on the new item list.
+2. Does the hookshot survive alongside rope arrows, or do rope arrows replace it entirely? (0.2 assumes they replace it.)
+3. Is the glider found early in the overworld, or a dungeon reward?
+4. Are rope arrows and bombs limited, and how many can Jeffrey carry?
+5. What do merchants take as money, and what do they sell?
+6. Can Jeffrey kill or steal from NPCs, and do they react to it?
+7. Is the tower only one climb, or does it have its own Thief-style floors with optional routes?
+8. Does each dungeon need a fixed theme position (tail, flank, shoulder), or is that up to the level design?
+9. Does the day/night cycle advance automatically as well as through resting?
+10. What motivates Jeffrey to kill the tree?
+11. Is the final destruction interactive, cinematic, or a combination?
+12. Does the colossus physically move during gameplay?
+13. How much optional exploration is appropriate for a four-hour experience?
 
 ## 17. Creative Vision
 
 Jeffrey Brings Death 2.0 should evoke the feeling of being small and vulnerable in an enormous, hostile, mysterious world.
 
-The player sees the glowing tree far above and gradually discovers a route toward it.
+The player sees the tower and its glowing tree from the outskirts, gathers three keys from the edges of the world, and gradually discovers a route to the top.
 
 Every region should inspire curiosity.
 
-Every new ability should change how the player understands the environment.
+Every new tool should change how the player understands the environment.
 
 Every major level should feel like a believable place with secrets, alternate entrances, and hidden connections.
 
