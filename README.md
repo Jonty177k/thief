@@ -3,6 +3,12 @@
 You are Jeffrey, a peasant demon creeping up the back of a walking Colossus
 toward the glowing tree on its shoulder. You are weak, and you stay weak.
 
+> **Moving to Unity.** The design has changed to Elden Ring plus Thief: reach
+> three dungeons on the outskirts, take a key from each, and climb the tower at
+> the centre ([docs/GDD.md](docs/GDD.md) v0.2). The game is being rebuilt from
+> scratch in Unity, in [`JeffreyUnity/`](JeffreyUnity/README.md), starting with
+> Thief 2 movement and controls. Everything below is the old Godot prototype.
+
 This is the **first playable greybox slice**, built in **Godot 4.3**
 (GDScript, no plugins). Everything is placeholder primitives with a
 low-res, Thief 2-ish look: the game renders at 640×360 and is scaled up
